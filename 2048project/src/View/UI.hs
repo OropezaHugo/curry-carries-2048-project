@@ -27,34 +27,20 @@ setup window = do
     instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win."
     instruction3 <- UI.label # set UI.text "3. Enjoy!!!"
 
+    textColum <- Core.column [element instruction1, element instruction2, element instruction3]
+
     bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style [("font-family", "'Courier New'"), ("color", "#2F48E0")]
     bestScore <- UI.label # set UI.text "000: " # set style [("font-family", "'Courier New'"), ("color", "#8080FF")]
     actualScoreLabel <- UI.label # set UI.text "Score: " # set style [("font-family", "'Courier New'"), ("color", "#2F48E0")]
     actualScore <- UI.label # set UI.text "000: " # set style [("font-family", "'Courier New'"), ("color", "#8080FF")]
     rowScore <- Core.row [element bestScoreLabel, element bestScore, element actualScoreLabel, element actualScore] # set style [("display", "flex"), ("align-items", "center")]
 
-    canvas <- UI.canvas # set UI.width 400
-                        # set UI.height 400
-    element canvas # set style [("border", "1px solid black"), ("background-color", "#BBADA0")]
+    --canvas <- UI.canvas # set UI.width 400
+                       -- # set UI.height 400
+    --element canvas # set style [("border", "1px solid black"), ("background-color", "#BBADA0")]
 
     startGame <- UI.button # set UI.text "Start game"
-    _ <- getBody window #+ [element titleMainPage, element instruction1, element instruction2, element instruction3, element img, element startGame, element rowScore, element canvas]
+    _ <- getBody window #+ [element titleMainPage, element textColum, element img, element startGame, element rowScore]
     on UI.click startGame $ const $ do
         element startGame # set UI.text "Starting game... wait please"
-    drawGridLines canvas
-
-drawGridLines :: Canvas -> UI ()
-drawGridLines canvas = void $ do
-    runFunction $ ffi "%1.getContext('2d').lineWidth = 4;" canvas
-    runFunction $ ffi "%1.getContext('2d').strokeStyle = 'rgba(187, 173, 160, 0.15)';" canvas
-
-    let cellWidth = 100
-        cellHeight = 100
-
-    -- Draw vertical lines
-    forM_ [1..3] $ \col -> do
-        runFunction $ ffi "var ctx = %1.getContext('2d'); ctx.beginPath(); ctx.moveTo(%2, 0); ctx.lineTo(%2, 400); ctx.stroke();" canvas (col * cellWidth)
-
-    -- Draw horizontal lines
-    forM_ [1..3] $ \row -> do
-        runFunction $ ffi "var ctx = %1.getContext('2d'); ctx.beginPath(); ctx.moveTo(0, %2); ctx.lineTo(400, %2); ctx.stroke();" canvas (row * cellHeight)
+    --drawGridLines canvas
