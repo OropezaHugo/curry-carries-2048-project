@@ -21,6 +21,9 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- threepenny-gui (== 0.9.4.1)
+- filepath (== 1.4.200.1)
+- text (== 2.0.2)
 
 ghc-options:
 - -Wall
