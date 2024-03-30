@@ -2,9 +2,9 @@ module MergeFunction where
 
     type Board = [[Int]]
 
-    moveRigth :: Board -> Board
-    moveRigth [] = []
-    moveRigth (x:xs) = reverse (summonRow (moveEmptySpaces (reverse x))) : moveRigth xs
+    moveRight :: Board -> Board
+    moveRight [] = []
+    moveRight (x:xs) = reverse (summonRow (moveEmptySpaces (reverse x))) : moveRight xs
 
     moveLeft :: Board -> Board
     moveLeft [] = []
@@ -16,13 +16,14 @@ module MergeFunction where
 
     moveDown :: Board -> Board
     moveDown [] = []
-    moveDown board = rotateBoard (moveRigth (rotateBoard board))
+    moveDown board = rotateBoard (moveRight (rotateBoard board))
     
     summonRow :: [Int] -> [Int]
     summonRow [] = []
     summonRow [x] = [x]
     summonRow (x:xs)    | x == head xs = x + head xs : summonRow (tail xs) ++ [0]
                         | otherwise = x : summonRow xs
+
     moveEmptySpaces :: [Int] -> [Int]
     moveEmptySpaces [] = []
     moveEmptySpaces [x] = [x]
@@ -47,4 +48,3 @@ module MergeFunction where
     rotateBoardaux [x] aux = rowsToCols x aux
     rotateBoardaux (x:xs) [] = rotateBoardaux xs (rowsToCols x [])
     rotateBoardaux (x:xs) aux = rotateBoardaux xs (rowsToCols x aux)
-    
