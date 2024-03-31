@@ -5,3 +5,4 @@ module DataManager(Board,
     type Board = [[Int]]
     type Score = Int
     type Game = (Board, Score)
+    

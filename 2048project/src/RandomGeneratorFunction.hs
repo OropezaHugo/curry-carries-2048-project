@@ -24,4 +24,3 @@ module RandomGeneratorFunction (randomTile,
                 newValue <- randomTile
                 let newRow = take col (board !! row) ++ [newValue] ++ drop (col + 1) (board !! row)
                 return $ take row board ++ [newRow] ++ drop (row + 1) board
-    

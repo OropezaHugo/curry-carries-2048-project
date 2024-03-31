@@ -36,5 +36,3 @@ module MergeFunction(summonRow,
     rotateBoardaux [x] aux = rowsToCols x aux
     rotateBoardaux (x:xs) [] = rotateBoardaux xs (rowsToCols x [])
     rotateBoardaux (x:xs) aux = rotateBoardaux xs (rowsToCols x aux)
-
-        

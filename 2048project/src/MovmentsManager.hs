@@ -37,3 +37,4 @@ module MovmentsManager(game) where
         movedGame@(newBoard, _) <- moveFunc game
         newBoard' <- insertRandomTile newBoard
         return (newBoard', snd movedGame)
+        
