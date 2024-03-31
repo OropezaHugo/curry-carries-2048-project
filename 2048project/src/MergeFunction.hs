@@ -52,3 +52,43 @@ module MergeFunction where
     rotateBoardaux [x] aux = rowsToCols x aux
     rotateBoardaux (x:xs) [] = rotateBoardaux xs (rowsToCols x [])
     rotateBoardaux (x:xs) aux = rotateBoardaux xs (rowsToCols x aux)
+
+    printBoard :: Board -> IO ()
+    printBoard [] = return ()
+    printBoard (row:rows) = do
+        putStrLn (unwords (map show row))
+        printBoard rows
+    
+    printGame :: Game -> IO ()
+    printGame (board, score) = do
+      putStrLn "Board:"
+      printBoard board
+      putStrLn $ "Score: " ++ show score
+      
+    main :: IO ()
+    main = do
+      let initialGame = ([[2, 0, 2, 4], [4, 2, 0, 2], [0, 4, 0, 4], [4, 4, 2, 0]], 0)
+      putStrLn "Initial Game State:"
+      printGame initialGame
+      putStrLn "---------------------------------"
+
+      -- Apply each move function and print the resulting board
+      let gameAfterRight = moveRight initialGame
+      putStrLn "After moving Right:"
+      printGame gameAfterRight
+      putStrLn "---------------------------------"
+
+      let gameAfterLeft = moveLeft initialGame
+      putStrLn "After moving Left:"
+      printGame gameAfterLeft
+      putStrLn "---------------------------------"
+
+      let gameAfterUp = moveUp initialGame
+      putStrLn "After moving Up:"
+      printGame gameAfterUp
+      putStrLn "---------------------------------"
+
+      let gameAfterDown = moveDown initialGame
+      putStrLn "After moving Down:"
+      printGame gameAfterDown
+      putStrLn "---------------------------------"
