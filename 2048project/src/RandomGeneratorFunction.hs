@@ -1,18 +1,19 @@
-module RandomGenerator() where
+module RandomGeneratorFunction (randomTile, 
+                                emptyPositions, 
+                                insertRandomTile) where
 
     import System.Random (randomRIO)
     import Data.List (elemIndices) 
-
+    import DataManager
+    
     randomTile :: IO Int
     randomTile = do
         rand <- randomRIO (0, 1) :: IO Int
         return $ if rand == 0 then 2 else 4
     
-    -- Función para encontrar posiciones vacías en el tablero
     emptyPositions :: Board -> [(Int, Int)]
     emptyPositions board = [(r, c) | (r, row) <- zip [0..] board, (c, val) <- zip [0..] row, val == 0]
     
-    -- Función para insertar un nuevo número aleatorio en una posición vacía
     insertRandomTile :: Board -> IO Board
     insertRandomTile board = do
         let empties = emptyPositions board
