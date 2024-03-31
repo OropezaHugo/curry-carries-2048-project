@@ -1,28 +1,32 @@
 module MergeFunction where
 
     type Board = [[Int]]
+    type Score = Int
+    type Game = (Board, Score)
 
-    moveRight :: Board -> Board
-    moveRight [] = []
-    moveRight (x:xs) = reverse (summonRow (moveEmptySpaces (reverse x))) : moveRight xs
+    moveRight :: Game -> Game
+    moveRight ([], score) = ([], score)
+    moveRight (x:xs, score) = (reverse (fst (summonRow (moveEmptySpaces (reverse x)) score)) : fst (moveRight (xs, score)), 
+                                snd (summonRow (moveEmptySpaces (reverse x)) (score + snd (moveRight (xs, score)))))
 
-    moveLeft :: Board -> Board
-    moveLeft [] = []
-    moveLeft (x:xs) = summonRow (moveEmptySpaces x) : moveLeft xs
+    moveLeft :: Game -> Game
+    moveLeft ([], score) = ([], score)
+    moveLeft (x:xs, score) = (fst (summonRow (moveEmptySpaces x) score) : fst (moveLeft (xs, score)), 
+                                snd (summonRow (moveEmptySpaces x) (score + snd (moveLeft (xs, score)))))
 
-    moveUp :: Board -> Board
-    moveUp [] = []
-    moveUp board = rotateBoard (moveLeft (rotateBoard board))
+    moveUp :: Game -> Game
+    moveUp ([], score) = ([], score)
+    moveUp (board, score) = (rotateBoard (fst (moveLeft (rotateBoard board, score))), snd (moveLeft (rotateBoard board, score)))
 
-    moveDown :: Board -> Board
-    moveDown [] = []
-    moveDown board = rotateBoard (moveRight (rotateBoard board))
-    
-    summonRow :: [Int] -> [Int]
-    summonRow [] = []
-    summonRow [x] = [x]
-    summonRow (x:xs)    | x == head xs = x + head xs : summonRow (tail xs) ++ [0]
-                        | otherwise = x : summonRow xs
+    moveDown :: Game -> Game
+    moveDown ([], score) = ([], score)
+    moveDown (board, score) = (rotateBoard (fst (moveRight (rotateBoard board, score))), snd (moveRight (rotateBoard board, score)))
+
+    summonRow :: [Int] -> Score -> ([Int], Score)
+    summonRow [] score = ([], score)
+    summonRow [x] score = ([x], score)
+    summonRow (x:xs) score  | x == head xs = (x + head xs : fst (summonRow (tail xs) (score + (x + head xs))) ++ [0], snd (summonRow (tail xs) (score + (x + head xs))))
+                            | otherwise = (x : fst (summonRow xs score), snd (summonRow xs score))
 
     moveEmptySpaces :: [Int] -> [Int]
     moveEmptySpaces [] = []
