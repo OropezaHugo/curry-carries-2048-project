@@ -52,7 +52,7 @@ module MergeFunction where
     rotateBoardaux [x] aux = rowsToCols x aux
     rotateBoardaux (x:xs) [] = rotateBoardaux xs (rowsToCols x [])
     rotateBoardaux (x:xs) aux = rotateBoardaux xs (rowsToCols x aux)
-
+    
     printBoard :: Board -> IO ()
     printBoard [] = return ()
     printBoard (row:rows) = do
@@ -64,7 +64,7 @@ module MergeFunction where
       putStrLn "Board:"
       printBoard board
       putStrLn $ "Score: " ++ show score
-      
+
     main :: IO ()
     main = do
       let initialGame = ([[2, 0, 2, 4], [4, 2, 0, 2], [0, 4, 0, 4], [4, 4, 2, 0]], 0)
