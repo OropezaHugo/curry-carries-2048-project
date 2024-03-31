@@ -1,5 +1,7 @@
 module MergeFunction where
 
+    import System.Random (randomRIO)
+    
     type Board = [[Int]]
     type Score = Int
     type Game = (Board, Score)
@@ -53,6 +55,35 @@ module MergeFunction where
     rotateBoardaux (x:xs) [] = rotateBoardaux xs (rowsToCols x [])
     rotateBoardaux (x:xs) aux = rotateBoardaux xs (rowsToCols x aux)
     
+    insertRandomNumbers :: Board -> IO Board
+    insertRandomNumbers board = do
+      let blankIndices = getBlankIndices board
+      if null blankIndices
+        then return board
+        else do
+          (row, col) <- randomElem blankIndices
+          value <- randomValue
+          let updatedBoard = updateBoard board (row, col) value
+          insertRandomNumbers updatedBoard
+    
+    getBlankIndices :: Board -> [(Int, Int)]
+    getBlankIndices board = concat [ [(r, c) | (c, x) <- zip [0 ..] row, x == 0] | (r, row) <- zip [0 ..] board ]
+    
+    updateBoard :: Board -> (Int, Int) -> Int -> Board
+    updateBoard board (row, col) value =
+      let (before, rowToUpdate : after) = splitAt row board
+          (start, _ : end) = splitAt col rowToUpdate
+       in before ++ [start ++ [value] ++ end] ++ after
+    
+    randomValue :: IO Int
+    randomValue = randomRIO (2, 4)
+    
+    randomElem :: [(Int, Int)] -> IO (Int, Int)
+    randomElem [] = error "Cannot select a random element from an empty list."
+    randomElem xs = do
+      idx <- randomRIO (0, length xs - 1)
+      return (xs !! idx)
+
     printBoard :: Board -> IO ()
     printBoard [] = return ()
     printBoard (row:rows) = do
