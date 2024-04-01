@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      MergeFunction
       View.UI
   other-modules:
       Paths_2048project
