@@ -1,44 +1,45 @@
 module MergeFunction where
     
     import System.Random (randomRIO)
-     
+
     type Board = [[Int]]
     type Score = Int
     type Game = (Board, Score)
 
-    moveRight :: Game -> IO Game
-    moveRight ([], score) = return ([], score)
-    moveRight (x:xs, score) = do
+    moveRight :: Game -> Game
+    moveRight ([], score) = ([], score)
+    moveRight (x:xs, score) =
         let (newRow, newScore) = summonRow (moveEmptySpaces (reverse x)) score
-        (newBoard, newTotalScore) <- moveRight (xs, newScore)
-        return (reverse newRow : newBoard, newTotalScore)
+            (newBoard, newTotalScore) = moveRight (xs, newScore)
+        in (reverse newRow : newBoard, newTotalScore)
     
-    moveLeft :: Game -> IO Game
-    moveLeft ([], score) = return ([], score)
-    moveLeft (x:xs, score) = do
+    moveLeft :: Game -> Game
+    moveLeft ([], score) = ([], score)
+    moveLeft (x:xs, score) =
         let (newRow, newScore) = summonRow (moveEmptySpaces x) score
-        (newBoard, newTotalScore) <- moveLeft (xs, newScore)
-        return (newRow : newBoard, newTotalScore)
+            (newBoard, newTotalScore) = moveLeft (xs, newScore)
+        in (newRow : newBoard, newTotalScore)
     
-    moveUp :: Game -> IO Game
-    moveUp ([], score) = return ([], score)
-    moveUp (board, score) = do
+    moveUp :: Game -> Game
+    moveUp ([], score) = ([], score)
+    moveUp (board, score) =
         let rotatedBoard = rotateBoard board
-        (newBoard, newScore) <- moveLeft (rotatedBoard, score)
-        return (rotateBoard newBoard, newScore)
+            (newBoard, newScore) = moveLeft (rotatedBoard, score)
+        in (rotateBoard newBoard, newScore)
     
-    moveDown :: Game -> IO Game
-    moveDown ([], score) = return ([], score)
-    moveDown (board, score) = do
+    moveDown :: Game -> Game
+    moveDown ([], score) = ([], score)
+    moveDown (board, score) =
         let rotatedBoard = rotateBoard board
-        (newBoard, newScore) <- moveRight (rotatedBoard, score)
-        return (rotateBoard newBoard, newScore)
+            (newBoard, newScore) = moveRight (rotatedBoard, score)
+        in (rotateBoard newBoard, newScore)
     
-    moveAndInsertRandom :: (Game -> IO Game) -> Game -> IO Game
-    moveAndInsertRandom moveFunc game = do
-        movedGame@(newBoard, _) <- moveFunc game
-        newBoard' <- insertRandomTile newBoard
-        return (newBoard', snd movedGame)
+    moveAndInsertRandom :: Game -> IO Game
+    moveAndInsertRandom game = do
+        movedGame <- ioGame game
+        let (newBoard, newScore) = movedGame
+        newBoardWithRandom <- insertRandomTile newBoard
+        return (newBoardWithRandom, newScore)
 
     summonRow :: [Int] -> Score -> ([Int], Score)
     summonRow [] score = ([], score)
@@ -93,3 +94,7 @@ module MergeFunction where
                 newValue <- randomTile
                 let newRow = take col (board !! row) ++ [newValue] ++ drop (col + 1) (board !! row)
                 return $ take row board ++ [newRow] ++ drop (row + 1) board
+
+    -- IO Parser
+    ioGame :: Game -> IO Game
+    ioGame game@(board, score) = return game
