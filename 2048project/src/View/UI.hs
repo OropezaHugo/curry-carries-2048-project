@@ -46,10 +46,31 @@ setup window = do
     
 
     startGame <- UI.button # set UI.text "Start game"
-    _ <- getBody window #+ [row [element titleMainPage, element img], element textColum, element startGame, element rowScore, element canvas]
+    nextTurn <- UI.button # set UI.text "Next Play"
+    _ <- getBody window #+ [row [element titleMainPage, element img], element textColum, row [element startGame, element nextTurn], element rowScore, element canvas]
+    
+    let drawTile value (x, y) = do
+            if value /= 0
+                then do
+                    canvas # set' UI.fillStyle (UI.htmlColor (getBackgroundColor value))
+                    return canvas # set UI.textFont "30px sans-serif"
+                    return canvas # set UI.strokeStyle (getTextColor value)
+                    canvas # UI.fillRect (fromIntegral (x + 10), fromIntegral (y + 10)) 80 80    
+                    canvas # UI.strokeText (show value) (fromIntegral (x + 40), fromIntegral (y + 60))
+                    return canvas
+                else
+                    return canvas
 
-    on UI.click startGame $ const $ do
-        let lines = [ (100 , 0, 2, 400, "#013D5A")
+    let drawBoard board = do
+            sequence_ [drawTile value (x * 100, y * 100) | (y, row) <- zip [0..] board, (x, value) <- zip [0..] row]
+            where
+                tileSize = 80
+
+    let drawUpdateOnGame (board, score) canvas = do
+            element actualScore # set UI.text (show score)
+            element canvas # set UI.width canvasSize
+                           # set UI.height canvasSize
+            let lines = [ (100 , 0, 2, 400, "#013D5A")
                     , (200, 0, 2, 400, "#013D5A")
                     , (300, 0, 2, 400, "#013D5A")
                     , (0, 100, 400, 2, "#013D5A")
@@ -57,36 +78,46 @@ setup window = do
                     , (0, 300, 400, 2, "#013D5A")
                     ]
 
-        forM_ lines $ \(x,y,w,h,color) -> do
-            canvas # set' UI.fillStyle (UI.htmlColor color)
-            canvas # UI.fillRect (x,y) w h
+            forM_ lines $ \(x,y,w,h,color) -> do
+                canvas # set' UI.fillStyle (UI.htmlColor color)
+                canvas # UI.fillRect (x,y) w h
 
-        -- draw a tile
-        canvas # set' UI.fillStyle (UI.htmlColor "#F4A258")
-        return canvas
-            # set UI.textFont    "30px sans-serif"
-            # set UI.strokeStyle "#013D5A"
-        canvas # UI.fillRect (10,10) 80 80
-        canvas # UI.strokeText "2" (40,60)
+            drawBoard board
+
+    on UI.click startGame $ const $ do        
         let initialGame = ([[2, 0, 0, 0], [0, 0, 4, 0], [0, 0, 0, 8], [0, 16, 0, 0]], 0)
-        drawUpdateOnGame initialGame (element canvas)
+        drawUpdateOnGame initialGame canvas
 
-drawTile :: Int -> (Int, Int) -> UI Element
-drawTile value (x, y) = do
-    canvas # set' UI.fillStyle (UI.htmlColor "#F4A258")
-    canvas # set UI.textFont "30px sans-serif"
-    canvas # set UI.strokeStyle "#013D5A"
-    canvas # UI.fillRect (fromIntegral x, fromIntegral y) 80 80
-    canvas # UI.strokeText (show value) (fromIntegral (x + 30), fromIntegral (y + 50))
-    return canvas
+    on UI.hover startGame $ const $ do
+        element startGame # set UI.text "Let's play!"
 
-drawBoard :: Board -> UI Element
-drawBoard board = do
-    sequence_ [drawTile value (x * 100, y * 100) | (y, row) <- zip [0..] board, (x, value) <- zip [0..] row]
-    where
-        tileSize = 80
+    on UI.click nextTurn $ const $ do
+        let actualGame = ([[0, 0, 0, 2], [0, 0, 0, 4], [0, 0, 0, 8], [0, 0, 0, 16]], 120)
+        drawUpdateOnGame actualGame canvas
 
-drawUpdateOnGame :: Game -> UI Element -> UI Element
-drawUpdateOnGame (board, _) canvas = do
-    element canvas # UI.clearCanvas
-    drawBoard board
+getBackgroundColor value | value == 2    = "#F4A258"
+                         | value == 4    = "#708C69"
+                         | value == 8    = "#BDD3CE"
+                         | value == 16   = "#013D5A"
+                         | value == 32   = "#FFFEEC"
+                         | value == 64   = "#BCB4FF"
+                         | value == 128  = "#E9FC87"
+                         | value == 256  = "#FFBE98"
+                         | value == 512  = "#141414"
+                         | value == 1024 = "#DF1B3F"
+                         | value == 2048 = "#19204E"
+                         | otherwise     = "#FCB300"
+
+getTextColor :: Int -> String
+getTextColor value | value == 2    = "#FFFFFF"
+                   | value == 4    = "#FFFFFF"
+                   | value == 8    = "#013D5A"
+                   | value == 16   = "#FFFFFF"
+                   | value == 32   = "#000000"
+                   | value == 64   = "#FFFFFF"
+                   | value == 128  = "#000000"
+                   | value == 256  = "#000000"
+                   | value == 512  = "#FFFFFF"
+                   | value == 1024 = "#FFFFFF"
+                   | value == 2048 = "#FFFFFF"
+                   | otherwise     = "#FFFFFF"
