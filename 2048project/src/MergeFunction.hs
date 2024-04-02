@@ -8,31 +8,21 @@ module MergeFunction where
 
     moveRight :: Game -> Game
     moveRight ([], score) = ([], score)
-    moveRight (x:xs, score) =
-        let (newRow, newScore) = summonRow (moveEmptySpaces (reverse x)) score
-            (newBoard, newTotalScore) = moveRight (xs, newScore)
-        in (reverse newRow : newBoard, newTotalScore)
-    
+    moveRight (x:xs, score) = (reverse (fst (summonRow (moveEmptySpaces (reverse x)) score)) : fst (moveRight (xs, score)), 
+                                snd (summonRow (moveEmptySpaces (reverse x)) (score + snd (moveRight (xs, score)))))
+
     moveLeft :: Game -> Game
     moveLeft ([], score) = ([], score)
-    moveLeft (x:xs, score) =
-        let (newRow, newScore) = summonRow (moveEmptySpaces x) score
-            (newBoard, newTotalScore) = moveLeft (xs, newScore)
-        in (newRow : newBoard, newTotalScore)
-    
+    moveLeft (x:xs, score) = (fst (summonRow (moveEmptySpaces x) score) : fst (moveLeft (xs, score)), 
+                                snd (summonRow (moveEmptySpaces x) (score + snd (moveLeft (xs, score)))))
+
     moveUp :: Game -> Game
     moveUp ([], score) = ([], score)
-    moveUp (board, score) =
-        let rotatedBoard = rotateBoard board
-            (newBoard, newScore) = moveLeft (rotatedBoard, score)
-        in (rotateBoard newBoard, newScore)
-    
+    moveUp (board, score) = (rotateBoard (fst (moveLeft (rotateBoard board, score))), snd (moveLeft (rotateBoard board, score)))
+
     moveDown :: Game -> Game
     moveDown ([], score) = ([], score)
-    moveDown (board, score) =
-        let rotatedBoard = rotateBoard board
-            (newBoard, newScore) = moveRight (rotatedBoard, score)
-        in (rotateBoard newBoard, newScore)
+    moveDown (board, score) = (rotateBoard (fst (moveRight (rotateBoard board, score))), snd (moveRight (rotateBoard board, score)))
     
     moveAndInsertRandom :: Game -> IO Game
     moveAndInsertRandom game = do
