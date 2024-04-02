@@ -8,7 +8,6 @@ import           System.FilePath ((</>))
 import           Control.Monad (forM_, void)
 import           MergeFunction
 
-
 startUI :: IO ()
 startUI = do
     startGUI defaultConfig
@@ -22,22 +21,18 @@ tileSize = 80.0
 setup :: Window -> UI ()
 setup window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
-    titleMainPage <- UI.h2 # set UI.text "2048 - The game"
+    titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"), ("color", "#013D5A"), ("text-align", "center")]
 
-    url <- UI.loadFile "image/png" "C:\\Users\\jorge\\Desktop\\JorgeHB\\Ing.SC\\5toSemestre\\Programming V\\Homework\\curry-carries-2048-project\\2048project\\src\\View\\2048-logo.png"
-    img <- mkElement "img" # set UI.src url # set UI.height 40 # set UI.width 40
-
-    instruction1 <- UI.label # set UI.text "1. Merge the blocks with similar value to obtain score."
-    instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win."
-    instruction3 <- UI.label # set UI.text "3. Enjoy!!!"
+    instruction1 <- UI.label # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
+    instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
+    instruction3 <- UI.label # set UI.text "3. Enjoy!!!" # set style styleNormalText
 
     textColum <- Core.column [element instruction1, element instruction2, element instruction3]
 
-    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style [("font-family", "'Courier New'"), ("color", "#013D5A")]
-    bestScore <- UI.label # set UI.text "000 " # set style [("font-family", "'Courier New'"), ("color", "#708C69")]
-    actualScoreLabel <- UI.label # set UI.text "Score: " # set style [("font-family", "'Courier New'"), ("color", "#013D5A")]
-    actualScore <- UI.label # set UI.text "000 " # set style [("font-family", "'Courier New'"), ("color", "#708C69")]
-    rowScore <- Core.row [element bestScoreLabel, element bestScore, element actualScoreLabel, element actualScore] # set style [("display", "flex"), ("justify-content", "space-between")]
+    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
+    bestScore <- UI.label # set UI.text "000" # set style styleScoreBoard
+    actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
+    actualScore <- UI.label # set UI.text "000" # set style styleLabelScore
 
     canvas <- UI.canvas
         # set UI.height canvasSize
@@ -45,9 +40,9 @@ setup window = do
         # set style [("border", "solid #013D5A 3px"), ("background", "#FCF3E3")]
     
 
-    startGame <- UI.button # set UI.text "Start game"
-    nextTurn <- UI.button # set UI.text "Next Play"
-    _ <- getBody window #+ [row [element titleMainPage, element img], element textColum, row [element startGame, element nextTurn], element rowScore, element canvas]
+    startGame <- UI.button # set UI.text "Start game" # set style styleButton
+    nextTurn <- UI.button # set UI.text "Next Play" # set style styleButton
+    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame, element nextTurn], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
     
     let drawTile value (x, y) = do
             if value /= 0
@@ -121,3 +116,24 @@ getTextColor value | value == 2    = "#FFFFFF"
                    | value == 1024 = "#FFFFFF"
                    | value == 2048 = "#FFFFFF"
                    | otherwise     = "#FFFFFF"
+
+styleButton :: [(String, String)]
+styleButton = [("padding-left", "10px"),
+               ("padding-right", "10px"),
+               ("padding-top", "5px"),
+               ("padding-bottom", "5px"),
+               ("margin", "5px"),
+               ("border-radius", "8px"),
+               ("background-color", "#FCF3E3"),
+               ("border-color", "#FCF3E3"),
+               ("color", "#013D5A"),
+               ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)")]                   
+
+styleLabelScore :: [(String, String)]
+styleLabelScore = [("font-family", "'Courier New'"), ("color", "#013D5A")]
+
+styleScoreBoard :: [(String, String)]           
+styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#708C69")]
+
+styleNormalText :: [(String, String)]
+styleNormalText = [("font-family", "'gill sans , georgia'")]
