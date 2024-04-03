@@ -1,4 +1,4 @@
-module MergeFunction where
+module MergeFunction (Board, Score, Game) where
     
     import System.Random (randomRIO)
 

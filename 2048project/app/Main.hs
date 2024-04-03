@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import View.UI as UI
 
 main :: IO ()
-main = someFunc
+main = UI.startUI
