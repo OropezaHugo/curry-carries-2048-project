@@ -38,11 +38,10 @@ setup window = do
         # set UI.height canvasSize
         # set UI.width canvasSize
         # set style [("border", "solid #013D5A 3px"), ("background", "#FCF3E3")]
-    
 
     startGame <- UI.button # set UI.text "Start game" # set style styleButton
     nextTurn <- UI.button # set UI.text "Next Play" # set style styleButton
-    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame, element nextTurn], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
+    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
     
     let drawTile value (x, y) = do
             if value /= 0
@@ -86,9 +85,25 @@ setup window = do
     on UI.hover startGame $ const $ do
         element startGame # set UI.text "Let's play!"
 
-    on UI.click nextTurn $ const $ do
-        let actualGame = ([[0, 0, 0, 2], [0, 0, 0, 4], [0, 0, 0, 8], [0, 0, 0, 16]], 120)
-        drawUpdateOnGame actualGame canvas
+    on UI.keydown startGame $ \c ->
+        if c == 39 || c == 68 || c == 100
+            then do
+                let actualGame = ([[0, 0, 0, 2], [0, 0, 0, 4], [0, 0, 0, 8], [0, 0, 0, 16]], 120)
+                drawUpdateOnGame actualGame canvas
+        else if c == 37 || c == 97 || c == 65
+            then do
+                let actualGame = ([[2, 0, 0, 0], [4, 0, 0, 0], [8, 0, 0, 0], [16, 0, 0, 0]], 120)
+                drawUpdateOnGame actualGame canvas
+        else if c == 38 || c == 87 || c == 119
+            then do
+                let actualGame = ([[2, 16, 4, 8], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 120)
+                drawUpdateOnGame actualGame canvas
+        else if c == 40 || c == 83 || c == 115
+            then do
+                let actualGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 16, 4, 8]], 120)
+                drawUpdateOnGame actualGame canvas
+        else
+            return ()
 
 getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
