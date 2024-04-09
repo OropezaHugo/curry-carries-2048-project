@@ -1,6 +1,6 @@
 module Main (main) where
 
-import View.UI as UI
+import View.POC as UI
 
 main :: IO ()
-main = UI.startUI
+main = UI.main2
