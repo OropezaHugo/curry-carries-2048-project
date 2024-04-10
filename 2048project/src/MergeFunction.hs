@@ -9,12 +9,12 @@ module MergeFunction (Board, Score, Game) where
     moveRight :: Game -> Game
     moveRight ([], score) = ([], score)
     moveRight (x:xs, score) = (reverse (fst (summonRow (moveEmptySpaces (reverse x)) score)) : fst (moveRight (xs, score)), 
-                                snd (summonRow (moveEmptySpaces (reverse x)) (score + snd (moveRight (xs, score)))))
+                                snd (summonRow (moveEmptySpaces (reverse x)) (if snd (moveRight (xs, score)) /= score then score + snd (moveRight (xs, score)) else score)))
 
     moveLeft :: Game -> Game
     moveLeft ([], score) = ([], score)
     moveLeft (x:xs, score) = (fst (summonRow (moveEmptySpaces x) score) : fst (moveLeft (xs, score)), 
-                                snd (summonRow (moveEmptySpaces x) (score + snd (moveLeft (xs, score)))))
+                                snd (summonRow (moveEmptySpaces x) (if snd (moveLeft (xs, score)) /= score then score + snd (moveLeft (xs, score)) else score)))
 
     moveUp :: Game -> Game
     moveUp ([], score) = ([], score)
