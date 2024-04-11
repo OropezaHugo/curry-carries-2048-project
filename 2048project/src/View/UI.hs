@@ -87,7 +87,7 @@ setup gameStateRef window = do
 
     on UI.click startGame $ const $ do
         element startGame # set UI.text "Restart"
-        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 4096], [0, 0, 0, 0]], 0)
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
