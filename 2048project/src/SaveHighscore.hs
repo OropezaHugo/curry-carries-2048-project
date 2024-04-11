@@ -1,4 +1,4 @@
-module SaveHighscore where
+module SaveHighscore (getHighscore, writeNewHighscore) where
     import System.IO
     import System.IO.Unsafe (unsafePerformIO)
     
@@ -11,8 +11,11 @@ module SaveHighscore where
     getStringHighscore :: String
     getStringHighscore = unsafePerformIO getIOHighScore
 
-    getHighscore :: Int
-    getHighscore = read getStringHighscore
+    getHighscore :: IO Int
+    getHighscore = do
+        highScoreStr <- getIOHighScore
+        return (read highScoreStr)
+
 
     writeNewHighscore :: Int -> IO()
     writeNewHighscore highscore = do writeFile highscorePath (show highscore)
