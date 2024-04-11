@@ -27,19 +27,3 @@ module MovementHandler where
     moveAndInsertRandom (board, score) gen = (newBoardWithRandom, score)
         where
             (newBoardWithRandom, _) = insertRandomTile board gen
-
-    main :: IO ()
-    main = do
-        let initialGame = ([[2, 0, 2, 4], [4, 2, 0, 2], [0, 4, 0, 4], [4, 4, 2, 0]], 0) -- Definir el juego inicial
-        putStrLn "Juego inicial:"
-        printBoard (fst initialGame)
-        putStrLn $ "Puntaje: " ++ show (snd initialGame)
-        gen <- newStdGen
-        let movedGame = moveUp initialGame
-            finalGame = moveAndInsertRandom movedGame gen 
-        putStrLn "\nJuego final:"
-        printBoard (fst finalGame)
-        putStrLn $ "Puntaje: " ++ show (snd finalGame)
-
-    printBoard :: Board -> IO ()
-    printBoard board = mapM_ (\row -> putStrLn (unwords (map show row))) board
