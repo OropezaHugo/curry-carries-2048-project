@@ -23,10 +23,8 @@ module MovementHandler where
     moveDown ([], score) = ([], score)
     moveDown (board, score) = (rotateBoard (fst (moveRight (rotateBoard board, score))), snd (moveRight (rotateBoard board, score)))
     
-    moveAndInsertRandom :: Game -> IO Game
-    moveAndInsertRandom game = do
-        gen <- newStdGen
-        let movedGame = game
-            (newBoard, newScore) = movedGame
+    moveAndInsertRandom :: Game -> StdGen -> Game
+    moveAndInsertRandom game gen =
+        let (newBoard, newScore) = game
             (newBoardWithRandom, _) = insertRandomTile newBoard gen
-        return (newBoardWithRandom, newScore)
+        in (newBoardWithRandom, newScore)
