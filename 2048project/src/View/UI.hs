@@ -87,7 +87,7 @@ setup gameStateRef window = do
 
     on UI.click startGame $ const $ do
         element startGame # set UI.text "Restart"
-        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 4096], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
@@ -129,9 +129,9 @@ getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
                          | value == 8    = "#BDD3CE"
                          | value == 16   = "#013D5A"
-                         | value == 32   = "#FFFEEC"
-                         | value == 64   = "#BCB4FF"
-                         | value == 128  = "#E9FC87"
+                         | value == 32   = "#6f524e"
+                         | value == 64   = "#997f87"
+                         | value == 128  = "#c99983"
                          | value == 256  = "#FFBE98"
                          | value == 512  = "#141414"
                          | value == 1024 = "#DF1B3F"
@@ -143,7 +143,7 @@ getTextColor value | value == 2    = "#FFFFFF"
                    | value == 4    = "#FFFFFF"
                    | value == 8    = "#013D5A"
                    | value == 16   = "#FFFFFF"
-                   | value == 32   = "#000000"
+                   | value == 32   = "#FFFFFF"
                    | value == 64   = "#FFFFFF"
                    | value == 128  = "#000000"
                    | value == 256  = "#000000"
