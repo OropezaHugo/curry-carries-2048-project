@@ -1,4 +1,4 @@
-module RandomGenerator where
+module RandomGeneratorFunction(insertRandomTile) where
 
     import DataHandler
     import System.Random

@@ -2,7 +2,7 @@ module MovementHandler where
 
     import DataHandler
     import MergeFunction
-    import RandomGenerator
+    import RandomGeneratorFunction
     import System.Random
 
     moveRight :: Game -> Game
