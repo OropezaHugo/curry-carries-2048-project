@@ -6,20 +6,25 @@ import           Graphics.UI.Threepenny.Canvas as Canvas
 import           Graphics.UI.Threepenny.Elements
 import           System.FilePath ((</>))
 import           Control.Monad (forM_, void)
-import           MergeFunction
+import           System.Random
+import           MovementHandler
+import           DataHandler
+import           Data.IORef
+
 
 startUI :: IO ()
 startUI = do
+    gameStateRef <- newIORef ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
     startGUI defaultConfig
         { jsPort       = Just 8023
         , jsStatic     = Just "../wwwroot"
-        } setup
+        } (setup gameStateRef)
 
 canvasSize = 400
 tileSize = 80.0
 
-setup :: Window -> UI ()
-setup window = do
+setup :: IORef Game -> Window -> UI ()
+setup gameStateRef window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
     titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"), ("color", "#013D5A"), ("text-align", "center")]
 
@@ -78,32 +83,36 @@ setup window = do
 
             drawBoard board
 
-    on UI.click startGame $ const $ do        
-        let initialGame = ([[2, 0, 0, 0], [0, 0, 4, 0], [0, 0, 0, 8], [0, 16, 0, 0]], 0)
-        drawUpdateOnGame initialGame canvas
+    on UI.click startGame $ const $ do
+        element startGame # set UI.text "Restart"
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        liftIO $ writeIORef gameStateRef initialGame
+        gen <- newStdGen
+        let finalGame = moveAndInsertRandom initialGame gen
+        liftIO $ writeIORef gameStateRef finalGame
+        drawUpdateOnGame finalGame canvas
 
-    on UI.hover startGame $ const $ do
-        element startGame # set UI.text "Let's play!"
-
-    on UI.keydown startGame $ \c ->
-        if c == 39 || c == 68 || c == 100
-            then do
-                let actualGame = ([[0, 0, 0, 2], [0, 0, 0, 4], [0, 0, 0, 8], [0, 0, 0, 16]], 120)
-                drawUpdateOnGame actualGame canvas
-        else if c == 37 || c == 97 || c == 65
-            then do
-                let actualGame = ([[2, 0, 0, 0], [4, 0, 0, 0], [8, 0, 0, 0], [16, 0, 0, 0]], 120)
-                drawUpdateOnGame actualGame canvas
-        else if c == 38 || c == 87 || c == 119
-            then do
-                let actualGame = ([[2, 16, 4, 8], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 120)
-                drawUpdateOnGame actualGame canvas
-        else if c == 40 || c == 83 || c == 115
-            then do
-                let actualGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 16, 4, 8]], 120)
-                drawUpdateOnGame actualGame canvas
-        else
-            return ()
+    on UI.keydown startGame $ \c -> do
+        gameState <- liftIO $ readIORef gameStateRef
+        gen <- liftIO newStdGen
+        let newGameState = case c of
+                39 -> moveRight gameState  -- Derecha
+                68 -> moveRight gameState  -- Derecha
+                100 -> moveRight gameState -- Derecha
+                37 -> moveLeft gameState   -- Izquierda
+                97 -> moveLeft gameState    -- Izquierda
+                65 -> moveLeft gameState    -- Izquierda
+                38 -> moveUp gameState     -- Arriba
+                87 -> moveUp gameState     -- Arriba
+                119 -> moveUp gameState    -- Arriba
+                40 -> moveDown gameState   -- Abajo
+                83 -> moveDown gameState   -- Abajo
+                115 -> moveDown gameState  -- Abajo
+                _ -> gameState             
+            movedGame = moveUp newGameState  
+            finalGame = moveAndInsertRandom movedGame gen 
+        liftIO $ writeIORef gameStateRef finalGame
+        drawUpdateOnGame finalGame canvas
 
 getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
