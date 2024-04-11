@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use when" #-}
 module View.UI (startUI) where
 
 import qualified Graphics.UI.Threepenny        as UI
@@ -95,24 +97,33 @@ setup gameStateRef window = do
     on UI.keydown startGame $ \c -> do
         gameState <- liftIO $ readIORef gameStateRef
         gen <- liftIO newStdGen
-        let newGameState = case c of
-                39 -> moveRight gameState  -- Derecha
-                68 -> moveRight gameState  -- Derecha
-                100 -> moveRight gameState -- Derecha
-                37 -> moveLeft gameState   -- Izquierda
-                97 -> moveLeft gameState    -- Izquierda
-                65 -> moveLeft gameState    -- Izquierda
-                38 -> moveUp gameState     -- Arriba
-                87 -> moveUp gameState     -- Arriba
-                119 -> moveUp gameState    -- Arriba
-                40 -> moveDown gameState   -- Abajo
-                83 -> moveDown gameState   -- Abajo
-                115 -> moveDown gameState  -- Abajo
-                _ -> gameState             
-            movedGame = moveUp newGameState  
-            finalGame = moveAndInsertRandom movedGame gen 
-        liftIO $ writeIORef gameStateRef finalGame
-        drawUpdateOnGame finalGame canvas
+
+        if c == 39 || c == 68 || c == 100
+            then do
+                let newGameState = moveRight gameState
+                let finalGame = moveAndInsertRandom newGameState gen 
+                liftIO $ writeIORef gameStateRef finalGame
+                drawUpdateOnGame finalGame canvas
+        else if c == 37 || c == 97 || c == 65
+            then do
+                let newGameState = moveLeft gameState
+                let finalGame = moveAndInsertRandom newGameState gen 
+                liftIO $ writeIORef gameStateRef finalGame
+                drawUpdateOnGame finalGame canvas
+        else if c == 38 || c == 87 || c == 119
+            then do
+                let newGameState = moveUp gameState
+                let finalGame = moveAndInsertRandom newGameState gen 
+                liftIO $ writeIORef gameStateRef finalGame
+                drawUpdateOnGame finalGame canvas
+        else if c == 40 || c == 83 || c == 115
+            then do
+                let newGameState = moveDown gameState
+                let finalGame = moveAndInsertRandom newGameState gen 
+                liftIO $ writeIORef gameStateRef finalGame
+                drawUpdateOnGame finalGame canvas
+        else
+            return ()
 
 getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
