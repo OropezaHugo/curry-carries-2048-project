@@ -57,7 +57,7 @@ setup gameStateRef highscoreRef window = do
                     return canvas # set UI.textFont "30px sans-serif"
                     return canvas # set UI.strokeStyle (getTextColor value)
                     canvas # UI.fillRect (fromIntegral (x + 10), fromIntegral (y + 10)) 80 80    
-                    canvas # UI.strokeText (show value) (fromIntegral (x + 40), fromIntegral (y + 60))
+                    canvas # UI.strokeText (show value) (fromIntegral (x + (getTextTilePosition value)), fromIntegral (y + 60))
                     return canvas
                 else
                     return canvas
@@ -178,3 +178,6 @@ styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#708C69")]
 
 styleNormalText :: [(String, String)]
 styleNormalText = [("font-family", "'gill sans , georgia'")]
+
+getTextTilePosition :: Int -> Int
+getTextTilePosition x = if x > 1000 then 17 else if x > 100 then 24 else if x > 10 then 34 else 41
