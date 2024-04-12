@@ -1,4 +1,4 @@
-module MovementHandler where
+module MovementHandler (moveLeft, moveRight, moveUp, moveDown, moveAndInsertRandom)where
 
     import DataHandler
     import MergeFunction

@@ -5,21 +5,28 @@ import           Graphics.UI.Threepenny.Core   as Core
 import           Graphics.UI.Threepenny.Canvas as Canvas
 import           Graphics.UI.Threepenny.Elements
 import           System.FilePath ((</>))
-import           Control.Monad (forM_, void)
-import           MergeFunction
+import           Control.Monad (forM_, void, when)
+import           System.Random
+import           MovementHandler
+import           DataHandler
+import           Data.IORef
+import           SaveHighscore
+
 
 startUI :: IO ()
 startUI = do
+    gameStateRef <- newIORef ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+    highscoreRef <- newIORef =<< getHighscore
     startGUI defaultConfig
         { jsPort       = Just 8023
         , jsStatic     = Just "../wwwroot"
-        } setup
+        } (setup gameStateRef highscoreRef)
 
 canvasSize = 400
 tileSize = 80.0
 
-setup :: Window -> UI ()
-setup window = do
+setup :: IORef Game -> IORef Int -> Window -> UI ()
+setup gameStateRef highscoreRef window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
     titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"), ("color", "#013D5A"), ("text-align", "center")]
 
@@ -30,20 +37,19 @@ setup window = do
     textColum <- Core.column [element instruction1, element instruction2, element instruction3]
 
     bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
-    bestScore <- UI.label # set UI.text "000" # set style styleScoreBoard
+    highscore <- liftIO $ readIORef highscoreRef
+    bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
     actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
-    actualScore <- UI.label # set UI.text "000" # set style styleLabelScore
+    actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
 
     canvas <- UI.canvas
         # set UI.height canvasSize
         # set UI.width canvasSize
         # set style [("border", "solid #013D5A 3px"), ("background", "#FCF3E3")]
-    
 
     startGame <- UI.button # set UI.text "Start game" # set style styleButton
-    nextTurn <- UI.button # set UI.text "Next Play" # set style styleButton
-    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame, element nextTurn], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
-    
+    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
+        
     let drawTile value (x, y) = do
             if value /= 0
                 then do
@@ -79,24 +85,59 @@ setup window = do
 
             drawBoard board
 
-    on UI.click startGame $ const $ do        
-        let initialGame = ([[2, 0, 0, 0], [0, 0, 4, 0], [0, 0, 0, 8], [0, 16, 0, 0]], 0)
-        drawUpdateOnGame initialGame canvas
+    on UI.click startGame $ const $ do
+        highscore <- liftIO $ readIORef highscoreRef
+        liftIO $ writeNewHighscore highscore
+        element startGame # set UI.text "Restart"
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        liftIO $ writeIORef gameStateRef initialGame
+        gen <- newStdGen
+        let finalGame = moveAndInsertRandom initialGame gen
+        liftIO $ writeIORef gameStateRef finalGame
+        drawUpdateOnGame finalGame canvas
 
-    on UI.hover startGame $ const $ do
-        element startGame # set UI.text "Let's play!"
+    on UI.keydown startGame $ \c -> do
+        gameState <- liftIO $ readIORef gameStateRef
+        highscore <- liftIO $ readIORef highscoreRef
+        gen <- liftIO newStdGen
 
-    on UI.click nextTurn $ const $ do
-        let actualGame = ([[0, 0, 0, 2], [0, 0, 0, 4], [0, 0, 0, 8], [0, 0, 0, 16]], 120)
-        drawUpdateOnGame actualGame canvas
+        let handleMove moveFunc = do
+                let newGameState = moveFunc gameState
+                let finalGame = moveAndInsertRandom newGameState gen
+                let (board, score) = finalGame
+                liftIO $ writeIORef gameStateRef finalGame
+                when (score > highscore) $ do
+                    liftIO $ writeNewHighscore score
+                    liftIO $ writeIORef highscoreRef score
+                element bestScore # set UI.text (show highscore)
+                drawUpdateOnGame finalGame canvas
+
+        case c of
+            39 -> handleMove moveRight  
+            68 -> handleMove moveRight
+            100 -> handleMove moveRight
+
+            37 -> handleMove moveLeft 
+            97 -> handleMove moveLeft
+            65 -> handleMove moveLeft
+
+            38 -> handleMove moveUp  
+            87 -> handleMove moveUp
+            119 -> handleMove moveUp
+
+            40 -> handleMove moveDown  
+            83 -> handleMove moveDown
+            115 -> handleMove moveDown
+
+            _ -> return ()
 
 getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
                          | value == 8    = "#BDD3CE"
                          | value == 16   = "#013D5A"
-                         | value == 32   = "#FFFEEC"
-                         | value == 64   = "#BCB4FF"
-                         | value == 128  = "#E9FC87"
+                         | value == 32   = "#6f524e"
+                         | value == 64   = "#997f87"
+                         | value == 128  = "#c99983"
                          | value == 256  = "#FFBE98"
                          | value == 512  = "#141414"
                          | value == 1024 = "#DF1B3F"
@@ -108,7 +149,7 @@ getTextColor value | value == 2    = "#FFFFFF"
                    | value == 4    = "#FFFFFF"
                    | value == 8    = "#013D5A"
                    | value == 16   = "#FFFFFF"
-                   | value == 32   = "#000000"
+                   | value == 32   = "#FFFFFF"
                    | value == 64   = "#FFFFFF"
                    | value == 128  = "#000000"
                    | value == 256  = "#000000"
