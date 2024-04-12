@@ -1,4 +1,4 @@
-module MovementHandler (moveLeft, moveRight, moveUp, moveDown, moveAndInsertRandom)where
+module MovementHandler (moveLeft, moveRight, moveUp, moveDown, moveAndInsertRandom, moveAndInsertRandomTileIfPossible)where
 
     import DataHandler
     import MergeFunction
@@ -25,3 +25,10 @@ module MovementHandler (moveLeft, moveRight, moveUp, moveDown, moveAndInsertRand
     moveAndInsertRandom (board, score) gen = (newBoardWithRandom, score)
         where
             (newBoardWithRandom, _) = insertRandomTile board gen
+
+    moveAndInsertRandomTileIfPossible :: Game -> Game -> StdGen -> Game
+    moveAndInsertRandomTileIfPossible (initBoard, initScore) (moveBoard, newScore) gen
+      | initBoard /= moveBoard = (newBoardWithRandom, newScore)
+      | otherwise = (initBoard, initScore)
+      where
+        (newBoardWithRandom, _) = insertRandomTile moveBoard gen

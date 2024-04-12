@@ -103,7 +103,7 @@ setup gameStateRef highscoreRef window = do
 
         let handleMove moveFunc = do
                 let newGameState = moveFunc gameState
-                let finalGame = moveAndInsertRandom newGameState gen
+                let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
                 let (board, score) = finalGame
                 liftIO $ writeIORef gameStateRef finalGame
                 when (score > highscore) $ do
