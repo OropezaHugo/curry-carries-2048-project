@@ -8,13 +8,11 @@ module MovementHandler (moveLeft, moveRight, moveUp, moveDown, moveAndInsertRand
     moveRight :: Game -> Game
     moveRight ([], score) = ([], score)
     moveRight (x:xs, score) = (reverse (fst (summonRow (moveEmptySpaces (reverse x)) score)) : fst (moveRight (xs, score)), 
-                                snd (summonRow (moveEmptySpaces (reverse x)) (if snd (moveRight (xs, score)) /= score then score + snd (moveRight (xs, score)) else score)))
-
+                                snd (summonRow (moveEmptySpaces (reverse x)) (if snd (summonRow x, score) /= score then score + snd (moveRight (xs, score)) else snd (moveRight (xs, score)))))
     moveLeft :: Game -> Game
     moveLeft ([], score) = ([], score)
     moveLeft (x:xs, score) = (fst (summonRow (moveEmptySpaces x) score) : fst (moveLeft (xs, score)), 
-                                snd (summonRow (moveEmptySpaces x) (if snd (moveLeft (xs, score)) /= score then score + snd (moveLeft (xs, score)) else score)))
-
+                                snd (summonRow (moveEmptySpaces x) (if snd (summonRow x, score) /= score then score + snd (moveLeft (xs, score)) else snd (moveLeft (xs, score)))))
     moveUp :: Game -> Game
     moveUp ([], score) = ([], score)
     moveUp (board, score) = (rotateBoard (fst (moveLeft (rotateBoard board, score))), snd (moveLeft (rotateBoard board, score)))
