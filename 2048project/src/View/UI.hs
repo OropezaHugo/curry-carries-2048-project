@@ -28,7 +28,9 @@ tileSize = 80.0
 setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
-    titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"), ("color", "#013D5A"), ("text-align", "center")]
+    titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"),
+                                                                        ("color", "#013D5A"),
+                                                                        ("text-align", "center")]
 
     instruction1 <- UI.label # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
     instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
@@ -48,7 +50,11 @@ setup gameStateRef highscoreRef window = do
         # set style [("border", "solid #013D5A 3px"), ("background", "#FCF3E3")]
 
     startGame <- UI.button # set UI.text "Start game" # set style styleButton
-    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame], row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore], element canvas]] # set style [("display", "flex"), ("justify-content", "center"), ("flex-direction", "row")]
+    _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame],
+                            row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore],
+                            element canvas]] # set style [("display", "flex"),
+                                                          ("justify-content", "center"),
+                                                          ("flex-direction", "row")]
         
     let drawTile value (x, y) = do
             if value /= 0
