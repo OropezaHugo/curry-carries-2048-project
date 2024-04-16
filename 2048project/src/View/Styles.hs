@@ -7,7 +7,10 @@ module View.Styles (getTextColor,
                styleScoreBoard,
                getGridLines,
                styleButtonStart,
-               styleLabelTitle) where 
+               styleLabelTitle,
+               stylePopupWindow,
+               stylePopupContent,
+               stylePopupText) where 
 
     getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
@@ -63,6 +66,11 @@ module View.Styles (getTextColor,
     styleScoreBoard :: [(String, String)]           
     styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#708C69")]
 
+    stylePopupText :: [(String, String)]           
+    stylePopupText = [("font-family", "'Courier New'"), 
+                      ("color", "#FCF3E3"),
+                      ("text-align", "center")]
+
     styleNormalText :: [(String, String)]
     styleNormalText = [("font-family", "'gill sans , georgia'")]
 
@@ -78,3 +86,22 @@ module View.Styles (getTextColor,
         , (0, 200, 400, 2, "#013D5A")
         , (0, 300, 400, 2, "#013D5A")
         ]
+    stylePopupWindow :: [(String, String)]
+    stylePopupWindow = [("display", "none"), 
+                        ("position", "fixed"), 
+                        ("z-index", "1"), 
+                        ("left", "0"), 
+                        ("top", "0"), 
+                        ("width", "100%"), 
+                        ("height", "100%"), 
+                        ("overflow", "auto"), 
+                        ("background-color", "rgba(0,0,0,0.4)"),
+                        ("justify-content", "center"),
+                        ("align-items", "center")]
+    
+    stylePopupContent :: [(String, String)]
+    stylePopupContent = [("background-color", "#fefefe"), 
+                         ("margin", "45% auto"), 
+                         ("padding", "20px"), 
+                         ("border", "1px solid #888"), 
+                         ("width", "30%")]
