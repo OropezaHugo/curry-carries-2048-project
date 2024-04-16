@@ -2,16 +2,16 @@ module View.UI (startUI) where
 
 import qualified Graphics.UI.Threepenny        as UI
 import           Graphics.UI.Threepenny.Core   as Core
-import           Graphics.UI.Threepenny.Canvas as Canvas
 import           Graphics.UI.Threepenny.Elements
-import           System.FilePath ((</>))
-import           Control.Monad (forM_, void, when)
+import           Control.Monad (forM_, when)
 import           System.Random
 import           MovementHandler
 import           DataHandler
 import           Data.IORef
 import           SaveHighscore
-
+import           View.Styles
+import           GameConditions
+import Graphics.Gloss (display)
 
 startUI :: IO ()
 startUI = do
@@ -22,15 +22,13 @@ startUI = do
         , jsStatic     = Just "../wwwroot"
         } (setup gameStateRef highscoreRef)
 
+canvasSize :: Int
 canvasSize = 400
-tileSize = 80.0
 
 setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
-    titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style [("font-family", "'gill sans, georgia'"),
-                                                                        ("color", "#013D5A"),
-                                                                        ("text-align", "center")]
+    titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style styleLabelTitle
 
     instruction1 <- UI.label # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
     instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
@@ -44,6 +42,24 @@ setup gameStateRef highscoreRef window = do
     actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
     actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
 
+    popupWindow <- UI.div #. "popup-window" # set style [("display", "none"), 
+                                                         ("position", "fixed"), 
+                                                         ("z-index", "1"), 
+                                                         ("left", "0"), 
+                                                         ("top", "0"), 
+                                                         ("width", "100%"), 
+                                                         ("height", "100%"), 
+                                                         ("overflow", "auto"), 
+                                                         ("background-color", "rgba(0,0,0,0.4)")]
+    popupContent <- UI.div #. "popup-content" # set style [("background-color", "#fefefe"), 
+                                                           ("margin", "15% auto"), 
+                                                           ("padding", "20px"), 
+                                                           ("border", "1px solid #888"), 
+                                                           ("width", "30%")]
+    popupTitle <- UI.h2 # set UI.text "Game Over"
+    popupButton1 <- UI.button # set UI.text "Restart" # set style styleButton
+    popupButton2 <- UI.button # set UI.text "Close" # set style styleButton
+
     canvas <- UI.canvas
         # set UI.height canvasSize
         # set UI.width canvasSize
@@ -52,16 +68,14 @@ setup gameStateRef highscoreRef window = do
     startGame <- UI.button # set UI.text "Start game" # set style styleButton
     _ <- getBody window #+ [column [element titleMainPage, element textColum, row [element startGame],
                             row [element actualScoreLabel, element actualScore], row [element bestScoreLabel, element bestScore],
-                            element canvas]] # set style [("display", "flex"),
-                                                          ("justify-content", "center"),
-                                                          ("flex-direction", "row")]
+                            element canvas]] # set style styleButtonStart
         
     let drawTile value (x, y) = do
             if value /= 0
                 then do
                     canvas # set' UI.fillStyle (UI.htmlColor (getBackgroundColor value))
-                    return canvas # set UI.textFont "30px sans-serif"
-                    return canvas # set UI.strokeStyle (getTextColor value)
+                    _ <- return canvas # set UI.textFont "30px sans-serif"
+                    _ <- return canvas # set UI.strokeStyle (getTextColor value)
                     canvas # UI.fillRect (fromIntegral (x + 10), fromIntegral (y + 10)) 80 80    
                     canvas # UI.strokeText (show value) (fromIntegral (x + (getTextTilePosition value)), fromIntegral (y + 60))
                     return canvas
@@ -70,20 +84,12 @@ setup gameStateRef highscoreRef window = do
 
     let drawBoard board = do
             sequence_ [drawTile value (x * 100, y * 100) | (y, row) <- zip [0..] board, (x, value) <- zip [0..] row]
-            where
-                tileSize = 80
 
     let drawUpdateOnGame (board, score) canvas = do
-            element actualScore # set UI.text (show score)
-            element canvas # set UI.width canvasSize
+            _ <- element actualScore # set UI.text (show score)
+            _ <- element canvas # set UI.width canvasSize
                            # set UI.height canvasSize
-            let lines = [ (100 , 0, 2, 400, "#013D5A")
-                    , (200, 0, 2, 400, "#013D5A")
-                    , (300, 0, 2, 400, "#013D5A")
-                    , (0, 100, 400, 2, "#013D5A")
-                    , (0, 200, 400, 2, "#013D5A")
-                    , (0, 300, 400, 2, "#013D5A")
-                    ]
+            let lines = getGridLines
 
             forM_ lines $ \(x,y,w,h,color) -> do
                 canvas # set' UI.fillStyle (UI.htmlColor color)
@@ -94,7 +100,7 @@ setup gameStateRef highscoreRef window = do
     on UI.click startGame $ const $ do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
-        element startGame # set UI.text "Restart"
+        _ <- element startGame # set UI.text "Restart"
         let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
@@ -110,12 +116,12 @@ setup gameStateRef highscoreRef window = do
         let handleMove moveFunc = do
                 let newGameState = moveFunc gameState
                 let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
-                let (board, score) = finalGame
+                let (_, score) = finalGame
                 liftIO $ writeIORef gameStateRef finalGame
                 when (score > highscore) $ do
                     liftIO $ writeNewHighscore score
                     liftIO $ writeIORef highscoreRef score
-                element bestScore # set UI.text (show highscore)
+                _ <- element bestScore # set UI.text (show highscore)
                 drawUpdateOnGame finalGame canvas
 
         case c of
@@ -136,54 +142,3 @@ setup gameStateRef highscoreRef window = do
             115 -> handleMove moveDown
 
             _ -> return ()
-
-getBackgroundColor value | value == 2    = "#F4A258"
-                         | value == 4    = "#708C69"
-                         | value == 8    = "#BDD3CE"
-                         | value == 16   = "#013D5A"
-                         | value == 32   = "#6f524e"
-                         | value == 64   = "#997f87"
-                         | value == 128  = "#c99983"
-                         | value == 256  = "#FFBE98"
-                         | value == 512  = "#141414"
-                         | value == 1024 = "#DF1B3F"
-                         | value == 2048 = "#19204E"
-                         | otherwise     = "#FCB300"
-
-getTextColor :: Int -> String
-getTextColor value | value == 2    = "#FFFFFF"
-                   | value == 4    = "#FFFFFF"
-                   | value == 8    = "#013D5A"
-                   | value == 16   = "#FFFFFF"
-                   | value == 32   = "#FFFFFF"
-                   | value == 64   = "#FFFFFF"
-                   | value == 128  = "#000000"
-                   | value == 256  = "#000000"
-                   | value == 512  = "#FFFFFF"
-                   | value == 1024 = "#FFFFFF"
-                   | value == 2048 = "#FFFFFF"
-                   | otherwise     = "#FFFFFF"
-
-styleButton :: [(String, String)]
-styleButton = [("padding-left", "10px"),
-               ("padding-right", "10px"),
-               ("padding-top", "5px"),
-               ("padding-bottom", "5px"),
-               ("margin", "5px"),
-               ("border-radius", "8px"),
-               ("background-color", "#FCF3E3"),
-               ("border-color", "#FCF3E3"),
-               ("color", "#013D5A"),
-               ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)")]                   
-
-styleLabelScore :: [(String, String)]
-styleLabelScore = [("font-family", "'Courier New'"), ("color", "#013D5A")]
-
-styleScoreBoard :: [(String, String)]           
-styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#708C69")]
-
-styleNormalText :: [(String, String)]
-styleNormalText = [("font-family", "'gill sans , georgia'")]
-
-getTextTilePosition :: Int -> Int
-getTextTilePosition x = if x > 1000 then 17 else if x > 100 then 24 else if x > 10 then 34 else 41
