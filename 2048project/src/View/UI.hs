@@ -11,7 +11,6 @@ import           Data.IORef
 import           SaveHighscore
 import           View.Styles
 import           GameConditions
-import Graphics.Gloss (display)
 
 startUI :: IO ()
 startUI = do
@@ -29,18 +28,11 @@ setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     _ <- return window # set UI.title "2048 - CurryCarries"
     titleMainPage <- UI.h2 # set UI.text "2048 - The game" # set style styleLabelTitle
-
     instruction1 <- UI.label # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
     instruction2 <- UI.label # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
     instruction3 <- UI.label # set UI.text "3. Enjoy!!!" # set style styleNormalText
 
     textColum <- Core.column [element instruction1, element instruction2, element instruction3]
-
-    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
-    highscore <- liftIO $ readIORef highscoreRef
-    bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
-    actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
-    actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
 
     popupWindow <- UI.div #. "popup-window" # set style [("display", "none"), 
                                                          ("position", "fixed"), 
@@ -57,8 +49,16 @@ setup gameStateRef highscoreRef window = do
                                                            ("border", "1px solid #888"), 
                                                            ("width", "30%")]
     popupTitle <- UI.h2 # set UI.text "Game Over"
-    popupButton1 <- UI.button # set UI.text "Restart" # set style styleButton
-    popupButton2 <- UI.button # set UI.text "Close" # set style styleButton
+    popupSubTitle <- UI.h3 # set UI.text "The board is full and there are no more moves to make :("
+    popupButton1 <- UI.button # set UI.text "Restart Game" # set style styleButton
+
+    element popupWindow #+ [column [element popupTitle, element popupSubTitle, element popupButton1]]
+
+    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
+    highscore <- liftIO $ readIORef highscoreRef
+    bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
+    actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
+    actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
 
     canvas <- UI.canvas
         # set UI.height canvasSize
@@ -97,6 +97,8 @@ setup gameStateRef highscoreRef window = do
 
             drawBoard board
 
+    getBody window #+ [element popupWindow]
+
     on UI.click startGame $ const $ do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
@@ -107,6 +109,8 @@ setup gameStateRef highscoreRef window = do
         let finalGame = moveAndInsertRandom initialGame gen
         liftIO $ writeIORef gameStateRef finalGame
         drawUpdateOnGame finalGame canvas
+
+        element popupWindow # set style [("display", "block")]
 
     on UI.keydown startGame $ \c -> do
         gameState <- liftIO $ readIORef gameStateRef
