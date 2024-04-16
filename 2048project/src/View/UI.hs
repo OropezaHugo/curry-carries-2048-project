@@ -112,6 +112,15 @@ setup gameStateRef highscoreRef window = do
 
         element popupWindow # set style [("display", "block")]
 
+    on UI.click popupButton1 $ const $ do
+        element popupWindow # set style [("display", "none")]
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        liftIO $ writeIORef gameStateRef initialGame
+        gen <- newStdGen
+        let finalGame = moveAndInsertRandom initialGame gen
+        liftIO $ writeIORef gameStateRef finalGame
+        drawUpdateOnGame finalGame canvas
+
     on UI.keydown startGame $ \c -> do
         gameState <- liftIO $ readIORef gameStateRef
         highscore <- liftIO $ readIORef highscoreRef
