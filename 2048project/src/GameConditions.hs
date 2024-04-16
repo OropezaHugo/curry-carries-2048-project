@@ -3,8 +3,9 @@ module GameConditions (isWinGame, isLostGame) where
     import DataHandler
     import Data.List
 
-    isWinGame :: Game -> Bool
-    isWinGame (board, score) = checkBoard board
+    isWinGame :: Game -> Bool -> Bool
+    isWinGame (board, score) winContinued =
+        if winContinued then False else checkBoard board
 
     checkBoard :: Board -> Bool
     checkBoard [] = False 
@@ -30,4 +31,3 @@ module GameConditions (isWinGame, isLostGame) where
     canMergeRows [] = False
     canMergeRows [_] = False
     canMergeRows (x:y:rest) = (x == y) || canMergeRows (y:rest)
-

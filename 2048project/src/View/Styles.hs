@@ -1,5 +1,5 @@
-module View.Styles (getTextColor, 
-               getTextTilePosition, 
+module View.Styles (getTextColor,
+               getTextTilePosition,
                getBackgroundColor,
                styleButton,
                styleLabelScore,
@@ -10,7 +10,8 @@ module View.Styles (getTextColor,
                styleLabelTitle,
                stylePopupWindow,
                stylePopupContent,
-               stylePopupText) where 
+               stylePopupText,
+               styleScoreBackground) where
 
     getBackgroundColor value | value == 2    = "#F4A258"
                          | value == 4    = "#708C69"
@@ -49,59 +50,75 @@ module View.Styles (getTextColor,
                 ("background-color", "#FCF3E3"),
                 ("border-color", "#FCF3E3"),
                 ("color", "#013D5A"),
-                ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)")] 
+                ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)")]
+
     styleButtonStart :: [(String, String)]
     styleButtonStart = [("display", "flex"),
                         ("justify-content", "center"),
-                        ("flex-direction", "row")]
+                        ("flex-direction", "row"),
+                        ("margin-top","25px"),
+                        ("margin-bottom","25px")]
 
     styleLabelTitle :: [(String, String)]
     styleLabelTitle = [("font-family", "'gill sans, georgia'"),
-                       ("color", "#013D5A"),
-                       ("text-align", "center")]                  
+                       ("color", "#490e0c"),
+                       ("text-align", "Left")]
 
     styleLabelScore :: [(String, String)]
-    styleLabelScore = [("font-family", "'Courier New'"), ("color", "#013D5A")]
+    styleLabelScore = [("font-family", "'Courier New'"), 
+                       ("color", "#FFFFFF"),
+                       ("margin", "10px")]
 
-    styleScoreBoard :: [(String, String)]           
-    styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#708C69")]
+    styleScoreBoard :: [(String, String)]
+    styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#FFFFFF"), ("margin-left","25px")]
 
-    stylePopupText :: [(String, String)]           
-    stylePopupText = [("font-family", "'Courier New'"), 
+    stylePopupText :: [(String, String)]
+    stylePopupText = [("font-family", "'Courier New'"),
                       ("color", "#FCF3E3"),
                       ("text-align", "center")]
 
     styleNormalText :: [(String, String)]
-    styleNormalText = [("font-family", "'gill sans , georgia'")]
+    styleNormalText = [("font-family", "'gill sans , georgia'"),
+                       ("margin-bottom","10px"),
+                       ("margin-top", "10px")]
 
     getTextTilePosition :: Int -> Int
-    getTextTilePosition x = if x > 1000 then 17 else if x > 100 then 24 else if x > 10 then 34 else 41
+    getTextTilePosition x
+                      | x > 1000 = 17
+                      | x > 100 = 24
+                      | x > 10 = 34
+                      | otherwise = 41
 
     getGridLines :: [(Double, Double, Double, Double, String)]
-    getGridLines = 
-        [ (100, 0, 2, 400, "#013D5A")
-        , (200, 0, 2, 400, "#013D5A")
-        , (300, 0, 2, 400, "#013D5A")
-        , (0, 100, 400, 2, "#013D5A")
-        , (0, 200, 400, 2, "#013D5A")
-        , (0, 300, 400, 2, "#013D5A")
+    getGridLines =
+        [ (100, 0, 2, 400, "#7d7577")
+        , (200, 0, 2, 400, "#7d7577")
+        , (300, 0, 2, 400, "#7d7577")
+        , (0, 100, 400, 2, "#7d7577")
+        , (0, 200, 400, 2, "#7d7577")
+        , (0, 300, 400, 2, "#7d7577")
         ]
     stylePopupWindow :: [(String, String)]
-    stylePopupWindow = [("display", "none"), 
-                        ("position", "fixed"), 
-                        ("z-index", "1"), 
-                        ("left", "0"), 
-                        ("top", "0"), 
-                        ("width", "100%"), 
-                        ("height", "100%"), 
-                        ("overflow", "auto"), 
+    stylePopupWindow = [("display", "none"),
+                        ("position", "fixed"),
+                        ("z-index", "1"),
+                        ("left", "0"),
+                        ("top", "0"),
+                        ("width", "100%"),
+                        ("height", "100%"),
+                        ("overflow", "auto"),
                         ("background-color", "rgba(0,0,0,0.4)"),
                         ("justify-content", "center"),
                         ("align-items", "center")]
-    
+
     stylePopupContent :: [(String, String)]
-    stylePopupContent = [("background-color", "#fefefe"), 
-                         ("margin", "45% auto"), 
-                         ("padding", "20px"), 
-                         ("border", "1px solid #888"), 
+    stylePopupContent = [("background-color", "#fefefe"),
+                         ("margin", "45% auto"),
+                         ("padding", "20px"),
+                         ("border", "1px solid #888"),
                          ("width", "30%")]
+    
+    styleScoreBackground :: [(String, String)]
+    styleScoreBackground = [("background-color", "#6f524e"),
+                            ("margin-left","30px"),
+                            ("border-radius", "10px")]
