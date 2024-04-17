@@ -3,7 +3,7 @@ module View.UI (startUI) where
 import qualified Graphics.UI.Threepenny        as UI
 import           Graphics.UI.Threepenny.Core   as Core
 import           Graphics.UI.Threepenny.Elements()
-import           Control.Monad (forM_, when)
+import           Control.Monad (forM_, when, unless)
 import           System.Random
 import           MovementHandler
 import           DataHandler
@@ -27,6 +27,7 @@ canvasSize = 400
 setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     winContinuedRef <- liftIO $ newIORef False
+    isGamePausedRef <- liftIO $ newIORef False
 
     _ <- return window # set UI.title "2048 - CurryCarries"
     titleMainPage <- UI.h1 # set UI.text "2048 - Game" # set style styleLabelTitle
@@ -123,51 +124,56 @@ setup gameStateRef highscoreRef window = do
     on UI.click popupButtonContinue $ const $ do
         _ <- element popupWindowWin # set style [("display", "none")]
         liftIO $ writeIORef winContinuedRef True
+        liftIO $ writeIORef isGamePausedRef False 
 
     body <- getBody window
     _ <- element body # set style [("background-color", "#fffaf2")]
 
     on UI.keydown body $ \c -> do
-        gameState <- liftIO $ readIORef gameStateRef
-        highscore <- liftIO $ readIORef highscoreRef
-        winContinued <- liftIO $ readIORef winContinuedRef
-        gen <- liftIO newStdGen
+        isGamePaused <- liftIO $ readIORef isGamePausedRef
+        
+        unless isGamePaused $ do
+            gameState <- liftIO $ readIORef gameStateRef
+            highscore <- liftIO $ readIORef highscoreRef
+            winContinued <- liftIO $ readIORef winContinuedRef
+            gen <- liftIO newStdGen
 
-        let handleMove moveFunc = do
-                let newGameState = moveFunc gameState
-                let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
-                let (_, score) = finalGame
-                liftIO $ writeIORef gameStateRef finalGame
+            let handleMove moveFunc = do
+                    let newGameState = moveFunc gameState
+                    let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
+                    let (_, score) = finalGame
+                    liftIO $ writeIORef gameStateRef finalGame
 
-                when (score > highscore) $ do
-                    liftIO $ writeNewHighscore score
-                    liftIO $ writeIORef highscoreRef score
-                _ <- element bestScore # set UI.text (show highscore)
+                    when (score > highscore) $ do
+                        liftIO $ writeNewHighscore score
+                        liftIO $ writeIORef highscoreRef score
+                    _ <- element bestScore # set UI.text (show highscore)
 
-                drawUpdateOnGame finalGame canvas
+                    drawUpdateOnGame finalGame canvas
 
-                when (isLostGame finalGame) $ do
-                    _ <- element popupWindow # set UI.style [("display", "flex")]
-                    return ()
-                when (isWinGame finalGame winContinued) $ do
-                    _ <- element popupWindowWin # set UI.style [("display", "flex")]
-                    return ()
+                    when (isLostGame finalGame) $ do
+                        _ <- element popupWindow # set UI.style [("display", "flex")]
+                        return ()
+                    when (isWinGame finalGame winContinued) $ do
+                        _ <- element popupWindowWin # set UI.style [("display", "flex")]
+                        liftIO $ writeIORef isGamePausedRef True
+                        return ()
 
-        case c of
-            39 -> handleMove moveRight
-            68 -> handleMove moveRight
-            100 -> handleMove moveRight
-
-            37 -> handleMove moveLeft
-            97 -> handleMove moveLeft
-            65 -> handleMove moveLeft
-
-            38 -> handleMove moveUp
-            87 -> handleMove moveUp
-            119 -> handleMove moveUp
-
-            40 -> handleMove moveDown
-            83 -> handleMove moveDown
-            115 -> handleMove moveDown
-
-            _ -> return ()
+            case c of
+                39 -> handleMove moveRight
+                68 -> handleMove moveRight
+                100 -> handleMove moveRight
+                
+                37 -> handleMove moveLeft
+                97 -> handleMove moveLeft
+                65 -> handleMove moveLeft
+                
+                38 -> handleMove moveUp
+                87 -> handleMove moveUp
+                119 -> handleMove moveUp
+                
+                40 -> handleMove moveDown
+                83 -> handleMove moveDown
+                115 -> handleMove moveDown
+                
+                _ -> return ()
