@@ -8,6 +8,7 @@ module View.Styles (getTextColor,
                styleNormalText,
                styleScoreBoard,
                getGridLines,
+               menuStyle,
                styleButtonStart,
                styleLabelTitle,
                stylePopupWindow,
@@ -66,13 +67,19 @@ module View.Styles (getTextColor,
                ("transition", "all 0.3s ease"),
                ("cursor", "pointer")]
 
+    menuStyle :: [(String, String)]
+    menuStyle = [("display", "flex"),
+                ("justify-content", "center"),
+                ("flex-direction", "flex-start"),
+                ("margin-top","25px"),
+                ("color", "rgba(252, 243, 227, 0.8)"),
+                ("margin-bottom","25px")]
+
+    
     styleButtonStart :: [(String, String)]
     styleButtonStart = [("display", "flex"),
                         ("justify-content", "center"),
-                        ("flex-direction", "row"),
-                        ("margin-top","25px"),
-                        ("color", "rgba(252, 243, 227, 0.8)"),
-                        ("margin-bottom","25px")]
+                        ("flex-direction", "row")]
 
     styleLabelTitle :: [(String, String)]
     styleLabelTitle = [("font-family", "system-ui"),

@@ -59,6 +59,8 @@ setup gameStateRef highscoreRef window = do
     bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
     actualScoreLabel <- UI.label # set UI.text "Current Score" # set style styleLabelScore
     actualScore <- UI.label # set UI.text "0" # set style styleScoreBoard
+    
+    rowMenuContainer <- UI.div #. "row-menu-conatiner" # set style menuStyle
 
     canvas <- UI.canvas
         # set UI.height canvasSize
@@ -71,8 +73,10 @@ setup gameStateRef highscoreRef window = do
     let scoreColumn1 = column [element bestScoreLabel, element bestScore] # set style styleScoreBackground
     let scoreColumn2 = column [element actualScoreLabel, element actualScore] # set style styleScoreBackground
     let buttonsColumn = column [element startGame, element undoMove] # set style buttonsColumnStyle
-
-    _ <- getBody window #+ [column [row [element titleMainPage], row [element textColum], row [buttonsColumn, scoreColumn1, scoreColumn2], 
+    
+    element rowMenuContainer #+ [buttonsColumn, scoreColumn1, scoreColumn2]
+    
+    _ <- getBody window #+ [column [row [element titleMainPage], row [element textColum], element rowMenuContainer, 
                                     element canvas]] # set style styleButtonStart
 
     let drawTile tileValue (x, y) = do
