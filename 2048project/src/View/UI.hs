@@ -30,12 +30,14 @@ setup gameStateRef highscoreRef window = do
     isGamePausedRef <- liftIO $ newIORef False
 
     _ <- return window # set UI.title "2048 - CurryCarries"
+
     titleMainPage <- UI.h1 # set UI.text "2048 - Game" # set style styleLabelTitle
     instruction1 <- UI.h3 # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
     instruction2 <- UI.h3 # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
     instruction3 <- UI.h3 # set UI.text "3. Enjoy!!!" # set style styleNormalText
+    emptySpace <- UI.h3 # set UI.text "" # set style emptySpace
 
-    textColum <- Core.column [element instruction1, element instruction2, element instruction3]
+    textColum <- Core.column [element instruction1, element instruction2, element instruction3, element emptySpace]
 
     popupWindow <- UI.div #. "popup-window" # set style stylePopupWindow
     popupTitle <- UI.h1 # set UI.text "Game Over" # set UI.style stylePopupText
@@ -52,24 +54,25 @@ setup gameStateRef highscoreRef window = do
     _ <- element popupWindow #+ [column [element popupTitle, element popupSubTitle, element popupButtonRestart]]
     _ <- element popupWindowWin #+ [column [element popupTitleWin, element popupSubTitleWin, element popupButtonContinue]]
 
-    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
+    bestScoreLabel <- UI.label # set UI.text "Best Score" # set style styleLabelScore
     highscore <- liftIO $ readIORef highscoreRef
     bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
-    actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
-    actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
+    actualScoreLabel <- UI.label # set UI.text "Current Score" # set style styleLabelScore
+    actualScore <- UI.label # set UI.text "0" # set style styleScoreBoard
 
     canvas <- UI.canvas
         # set UI.height canvasSize
         # set UI.width canvasSize
         # set style [("border", "solid #7d7577 3px"), ("background", "#FCF3E3"), ("margin-top", "25px")]
 
-    startGame <- UI.button # set UI.text "Start game" # set style styleButton
+    undoMove <- UI.img # set UI.src "https://i.postimg.cc/GtrVnvfP/return-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px")])
+    startGame <- UI.img # set UI.src "https://i.postimg.cc/zX0RQCHN/play-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px")])
 
     let scoreColumn1 = column [element bestScoreLabel, element bestScore] # set style styleScoreBackground
     let scoreColumn2 = column [element actualScoreLabel, element actualScore] # set style styleScoreBackground
+    let buttonsColumn = column [element startGame, element undoMove] # set style buttonsColumnStyle
 
-    _ <- getBody window #+ [column [row [element titleMainPage,scoreColumn1, scoreColumn2], 
-                                    element textColum, row [element startGame],
+    _ <- getBody window #+ [column [row [element titleMainPage], row [element textColum], row [buttonsColumn, scoreColumn1, scoreColumn2], 
                                     element canvas]] # set style styleButtonStart
 
     let drawTile tileValue (x, y) = do
@@ -104,7 +107,7 @@ setup gameStateRef highscoreRef window = do
     on UI.click startGame $ const $ do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
-        _ <- element startGame # set UI.text "Restart"
+        _ <- element startGame # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px")])
         let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
@@ -127,7 +130,11 @@ setup gameStateRef highscoreRef window = do
         liftIO $ writeIORef isGamePausedRef False 
 
     body <- getBody window
-    _ <- element body # set style [("background-color", "#fffaf2")]
+    _ <- element body # set style [ ("background-color", "#fffaf2")
+                            , ("background-image", "radial-gradient(circle, #eee4da 30%, transparent 30%)")
+                            , ("background-size", "120px 120px")
+                            , ("background-position", "0 0, 80px 80px")
+                            ]
 
     on UI.keydown body $ \c -> do
         isGamePaused <- liftIO $ readIORef isGamePausedRef
