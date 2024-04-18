@@ -3,6 +3,8 @@ module View.Styles (getTextColor,
                getBackgroundColor,
                styleButton,
                styleLabelScore,
+               emptySpace,
+               buttonsColumnStyle,
                styleNormalText,
                styleScoreBoard,
                getGridLines,
@@ -40,37 +42,64 @@ module View.Styles (getTextColor,
                     | value == 2048 = "#FFFFFF"
                     | otherwise     = "#FFFFFF"
 
+    buttonsColumnStyle :: [(String, String)]
+    buttonsColumnStyle = [("display", "flex"),
+                     ("justify-content", "flex-start"),
+                     ("align-items", "flex-start"),
+                     ("margin-right", "20px"),
+                     ("flex-direction", "column")]
+    
     styleButton :: [(String, String)]
     styleButton = [("padding-left", "10px"),
                 ("padding-right", "10px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
-                ("margin", "5px"),
-                ("border-radius", "8px"),
-                ("background-color", "#FCF3E3"),
-                ("border-color", "#FCF3E3"),
-                ("color", "#013D5A"),
-                ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)")]
+               ("margin","5px"),
+               ("border-radius", "8px"),
+               ("background-color", "#BC8A5F"),
+               ("border", "1px solid #FCF3E3"),
+               ("color", "rgba(252, 243, 227, 0.8)"),
+               ("font-family", "sans-serif"),
+               ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)"),
+               ("font-size", "15px"),
+               ("font-weight", "bold"),
+               ("transition", "all 0.3s ease"),
+               ("cursor", "pointer")]
 
     styleButtonStart :: [(String, String)]
     styleButtonStart = [("display", "flex"),
                         ("justify-content", "center"),
                         ("flex-direction", "row"),
                         ("margin-top","25px"),
+                        ("color", "rgba(252, 243, 227, 0.8)"),
                         ("margin-bottom","25px")]
 
     styleLabelTitle :: [(String, String)]
-    styleLabelTitle = [("font-family", "'gill sans, georgia'"),
-                       ("color", "#490e0c"),
-                       ("text-align", "Left")]
+    styleLabelTitle = [("font-family", "system-ui"),
+                        ("font-size", "60px"),
+                        ("font-weight", "bold"),
+                        ("color", "#8f7a66"),
+                        ("margin-left","30px"),
+                        ("margin-bottom","16px"),
+                        ("text-align", "center")]
 
     styleLabelScore :: [(String, String)]
-    styleLabelScore = [("font-family", "'Courier New'"), 
-                       ("color", "#FFFFFF"),
+    styleLabelScore = [("display", "flex"),
+                       ("justify-content", "center"),
+                       ("font-family", "sans-serif"), 
+                       ("font-weight", "800"),
+                       ("color", "#eee4da"),
                        ("margin", "10px")]
 
     styleScoreBoard :: [(String, String)]
-    styleScoreBoard = [("font-family", "'Courier New'"), ("color", "#FFFFFF"), ("margin-left","25px")]
+    styleScoreBoard = [("font-family", "sans-serif"), 
+                        ("font-size", "20px"),
+                        ("font-weight", "800"),
+                        ("color", "white")]
+
+    emptySpace :: [(String, String)]
+    emptySpace = [("margin-bottom","20px"),
+                    ("margin-top", "0px")]
 
     stylePopupText :: [(String, String)]
     stylePopupText = [("font-family", "'Courier New'"),
@@ -78,9 +107,11 @@ module View.Styles (getTextColor,
                       ("text-align", "center")]
 
     styleNormalText :: [(String, String)]
-    styleNormalText = [("font-family", "'gill sans , georgia'"),
-                       ("margin-bottom","10px"),
-                       ("margin-top", "10px")]
+    styleNormalText = [("font-family", "sans-serif"),
+                       ("font-size", "15px"),
+                       ("color", "#77707b"),
+                       ("margin-bottom","3px"),
+                       ("margin-top", "0px")]
 
     getTextTilePosition :: Int -> Int
     getTextTilePosition x
@@ -91,13 +122,14 @@ module View.Styles (getTextColor,
 
     getGridLines :: [(Double, Double, Double, Double, String)]
     getGridLines =
-        [ (100, 0, 2, 400, "#7d7577")
-        , (200, 0, 2, 400, "#7d7577")
-        , (300, 0, 2, 400, "#7d7577")
-        , (0, 100, 400, 2, "#7d7577")
-        , (0, 200, 400, 2, "#7d7577")
-        , (0, 300, 400, 2, "#7d7577")
+        [ (100, 0, 5, 400, "#8B5E34")
+        , (200, 0, 5, 400, "#8B5E34")
+        , (300, 0, 5, 400, "#8B5E34")
+        , (0, 100, 400, 5, "#8B5E34")
+        , (0, 200, 400, 5, "#8B5E34")
+        , (0, 300, 400, 5, "#8B5E34")
         ]
+
     stylePopupWindow :: [(String, String)]
     stylePopupWindow = [("display", "none"),
                         ("position", "fixed"),
@@ -119,6 +151,12 @@ module View.Styles (getTextColor,
                          ("width", "30%")]
     
     styleScoreBackground :: [(String, String)]
-    styleScoreBackground = [("background-color", "#6f524e"),
-                            ("margin-left","30px"),
+    styleScoreBackground = [("display", "flex"),
+                            ("flex-direction", "column"),
+                            ("justify-content", "center"),
+                            ("align-items", "center"),
+                            ("background-color", "#bbada0"),
+                            ("margin-left","10px"),
+                            ("padding-top", "0px"),
+                            ("padding-bottom", "18px"),
                             ("border-radius", "10px")]
