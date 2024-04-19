@@ -110,20 +110,34 @@ setup gameStateRef highscoreRef window = do
 
     _ <- getBody window #+ [element popupWindow, element popupWindowWin]
 
+    on UI.click undoMove $ const $ do
+        canUndo <- liftIO $ readIORef canUndoRef
+        when canUndo $ do
+            previousState <- liftIO $ readIORef previousStateRef
+            case previousState of
+                Nothing -> return ()
+                Just lastState -> do
+                    liftIO $ writeIORef gameStateRef lastState
+                    liftIO $ writeIORef canUndoRef False
+                    liftIO $ writeIORef winContinuedRef False
+                    drawUpdateOnGame lastState canvas
+
     on UI.click startGame $ const $ do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
         _ <- element startGame # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style styleButton
-        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 1024, 1024, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
         liftIO $ writeIORef gameStateRef finalGame
+        liftIO $ writeIORef winContinuedRef False
+
         drawUpdateOnGame finalGame canvas
 
     on UI.click popupButtonRestart $ const $ do
         _ <- element popupWindow # set style [("display", "none")]
-        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
