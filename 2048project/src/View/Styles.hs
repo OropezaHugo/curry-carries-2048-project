@@ -16,28 +16,28 @@ module View.Styles (getTextColor,
                stylePopupText,
                styleScoreBackground) where
 
-    getBackgroundColor value | value == 2    = "#F4A258"
-                         | value == 4    = "#708C69"
-                         | value == 8    = "#BDD3CE"
-                         | value == 16   = "#013D5A"
-                         | value == 32   = "#6f524e"
-                         | value == 64   = "#997f87"
-                         | value == 128  = "#c99983"
-                         | value == 256  = "#FFBE98"
-                         | value == 512  = "#141414"
-                         | value == 1024 = "#DF1B3F"
-                         | value == 2048 = "#19204E"
-                         | otherwise     = "#FCB300"
+    getBackgroundColor value | value == 2    = "#DCDCDD"
+                         | value == 4    = "#CBDEEC"
+                         | value == 8    = "#BBDEFB"
+                         | value == 16   = "#90CAF9"
+                         | value == 32   = "#64B5F6"
+                         | value == 64   = "#42A5F5"
+                         | value == 128  = "#2196F3"
+                         | value == 256  = "#1E88E5"
+                         | value == 512  = "#1565C0"
+                         | value == 1024 = "#1565C0"
+                         | value == 2048 = "#0D47A1"
+                         | otherwise     = "#4895EF"
 
     getTextColor :: Int -> String
-    getTextColor value | value == 2    = "#FFFFFF"
-                    | value == 4    = "#FFFFFF"
-                    | value == 8    = "#013D5A"
-                    | value == 16   = "#FFFFFF"
-                    | value == 32   = "#FFFFFF"
+    getTextColor value | value == 2    = "#000000"
+                    | value == 4    = "#000000"
+                    | value == 8    = "#000000"
+                    | value == 16   = "#000000"
+                    | value == 32   = "#000000"
                     | value == 64   = "#FFFFFF"
-                    | value == 128  = "#000000"
-                    | value == 256  = "#000000"
+                    | value == 128  = "#FFFFFF"
+                    | value == 256  = "#FFFFFF"
                     | value == 512  = "#FFFFFF"
                     | value == 1024 = "#FFFFFF"
                     | value == 2048 = "#FFFFFF"
@@ -47,19 +47,18 @@ module View.Styles (getTextColor,
     buttonsColumnStyle = [("display", "flex"),
                      ("justify-content", "flex-start"),
                      ("align-items", "flex-start"),
-                     ("margin-right", "20px"),
+                     ("margin-right", "65px"),
                      ("flex-direction", "column")]
     
     styleButton :: [(String, String)]
-    styleButton = [("padding-left", "10px"),
-                ("padding-right", "10px"),
+    styleButton = [("padding-left", "30px"),
+                ("padding-right", "30px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
                ("margin","5px"),
                ("border-radius", "8px"),
-               ("background-color", "#BC8A5F"),
-               ("border", "1px solid #FCF3E3"),
-               ("color", "rgba(252, 243, 227, 0.8)"),
+               ("background-color", "#3282B8"),
+               ("color", "#3282B8"),
                ("font-family", "sans-serif"),
                ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)"),
                ("font-size", "15px"),
@@ -69,11 +68,12 @@ module View.Styles (getTextColor,
 
     menuStyle :: [(String, String)]
     menuStyle = [("display", "flex"),
-                ("justify-content", "center"),
+                ("justify-content", "flex-start"),
                 ("flex-direction", "flex-start"),
-                ("margin-top","25px"),
-                ("color", "rgba(252, 243, 227, 0.8)"),
-                ("margin-bottom","25px")]
+                ("align-content", "space-between"),
+                ("margin-top","0px"),
+                ("color", "rgba(33, 161, 192, 0.7)"),
+                ("margin-bottom","0px")]
 
     
     styleButtonStart :: [(String, String)]
@@ -85,7 +85,7 @@ module View.Styles (getTextColor,
     styleLabelTitle = [("font-family", "system-ui"),
                         ("font-size", "60px"),
                         ("font-weight", "bold"),
-                        ("color", "#8f7a66"),
+                        ("color", "#1C2B2D"),
                         ("margin-left","30px"),
                         ("margin-bottom","16px"),
                         ("text-align", "center")]
@@ -95,14 +95,14 @@ module View.Styles (getTextColor,
                        ("justify-content", "center"),
                        ("font-family", "sans-serif"), 
                        ("font-weight", "800"),
-                       ("color", "#eee4da"),
+                       ("color", "#395B64"),
                        ("margin", "10px")]
 
     styleScoreBoard :: [(String, String)]
     styleScoreBoard = [("font-family", "sans-serif"), 
                         ("font-size", "20px"),
                         ("font-weight", "800"),
-                        ("color", "white")]
+                        ("color", "#1C2B2D")]
 
     emptySpace :: [(String, String)]
     emptySpace = [("margin-bottom","20px"),
@@ -116,25 +116,25 @@ module View.Styles (getTextColor,
     styleNormalText :: [(String, String)]
     styleNormalText = [("font-family", "sans-serif"),
                        ("font-size", "15px"),
-                       ("color", "#77707b"),
+                       ("color", "#393E46"),
                        ("margin-bottom","3px"),
                        ("margin-top", "0px")]
 
     getTextTilePosition :: Int -> Int
     getTextTilePosition x
                       | x > 1000 = 17
-                      | x > 100 = 24
+                      | x > 100 = 24072227
                       | x > 10 = 34
                       | otherwise = 41
 
     getGridLines :: [(Double, Double, Double, Double, String)]
     getGridLines =
-        [ (100, 0, 5, 400, "#8B5E34")
-        , (200, 0, 5, 400, "#8B5E34")
-        , (300, 0, 5, 400, "#8B5E34")
-        , (0, 100, 400, 5, "#8B5E34")
-        , (0, 200, 400, 5, "#8B5E34")
-        , (0, 300, 400, 5, "#8B5E34")
+        [ (100, 0, 2, 400, "#7F7F7F")
+        , (200, 0, 2, 400, "#7F7F7F")
+        , (300, 0, 2, 400, "#7F7F7F")
+        , (0, 100, 400, 2, "#7F7F7F")
+        , (0, 200, 400, 2, "#7F7F7F")
+        , (0, 300, 400, 2, "#7F7F7F")
         ]
 
     stylePopupWindow :: [(String, String)]
@@ -160,10 +160,10 @@ module View.Styles (getTextColor,
     styleScoreBackground :: [(String, String)]
     styleScoreBackground = [("display", "flex"),
                             ("flex-direction", "column"),
-                            ("justify-content", "center"),
+                            ("justify-content", "top-center"),
                             ("align-items", "center"),
-                            ("background-color", "#bbada0"),
+                            ("background-color", "#E8E8E8"),
                             ("margin-left","10px"),
-                            ("padding-top", "0px"),
-                            ("padding-bottom", "18px"),
+                            ("margin-top", "5px"),
+                            ("margin-bottom", "10px"),
                             ("border-radius", "10px")]
