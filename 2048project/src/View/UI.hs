@@ -42,14 +42,12 @@ setup gameStateRef highscoreRef window = do
     popupWindow <- UI.div #. "popup-window" # set style stylePopupWindow
     popupTitle <- UI.h1 # set UI.text "Game Over" # set UI.style stylePopupText
     popupSubTitle <- UI.h2 # set UI.text "The board is full and there are no more moves to make :(" # set UI.style stylePopupText
-    popupButtonRestart <- UI.button # set UI.text "Restart Game"
-        # set style (styleButton ++ [("margin-left", "345px")])
+    popupButtonRestart <- UI.img # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px"), ("margin-left", "345px")])
 
     popupWindowWin <- UI.div #. "popup-window-win" # set style stylePopupWindow
     popupTitleWin <- UI.h1 # set UI.text "You Win!" # set UI.style stylePopupText
     popupSubTitleWin <- UI.h2 # set UI.text "Congratulations! You have reached 2048!" # set UI.style stylePopupText
-    popupButtonContinue <- UI.button # set UI.text "Continue Game"
-        # set style (styleButton ++ [("margin-left", "240px")])
+    popupButtonContinue <- UI.img # set UI.src "https://i.postimg.cc/zX0RQCHN/play-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px"), ("margin-left", "240px")])
 
     _ <- element popupWindow #+ [column [element popupTitle, element popupSubTitle, element popupButtonRestart]]
     _ <- element popupWindowWin #+ [column [element popupTitleWin, element popupSubTitleWin, element popupButtonContinue]]
@@ -65,7 +63,7 @@ setup gameStateRef highscoreRef window = do
     canvas <- UI.canvas
         # set UI.height canvasSize
         # set UI.width canvasSize
-        # set style [("border", "solid #7d7577 3px"), ("background", "#FCF3E3"), ("margin-top", "25px")]
+        # set style [("border", "solid #7d7577 3px"), ("background", "#ffffff"), ("margin-top", "25px")]
 
     undoMove <- UI.img # set UI.src "https://i.postimg.cc/GtrVnvfP/return-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px")])
     startGame <- UI.img # set UI.src "https://i.postimg.cc/zX0RQCHN/play-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px")])
@@ -134,11 +132,7 @@ setup gameStateRef highscoreRef window = do
         liftIO $ writeIORef isGamePausedRef False 
 
     body <- getBody window
-    _ <- element body # set style [ ("background-color", "#fffaf2")
-                            , ("background-image", "radial-gradient(circle, #eee4da 30%, transparent 30%)")
-                            , ("background-size", "120px 120px")
-                            , ("background-position", "0 0, 80px 80px")
-                            ]
+    _ <- element body # set style [("background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #91C8E4, #F6F4EB)")] --"background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #4682A9)"
 
     on UI.keydown body $ \c -> do
         isGamePaused <- liftIO $ readIORef isGamePausedRef
