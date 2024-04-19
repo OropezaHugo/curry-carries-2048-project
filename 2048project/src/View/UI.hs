@@ -28,6 +28,8 @@ setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     winContinuedRef <- liftIO $ newIORef False
     isGamePausedRef <- liftIO $ newIORef False
+    previousStateRef <- liftIO $ newIORef Nothing
+    canUndoRef <- liftIO $ newIORef False
 
     _ <- return window # set UI.title "2048 - CurryCarries"
 
@@ -143,6 +145,9 @@ setup gameStateRef highscoreRef window = do
             gameState <- liftIO $ readIORef gameStateRef
             highscore <- liftIO $ readIORef highscoreRef
             winContinued <- liftIO $ readIORef winContinuedRef
+            currentState <- liftIO $ readIORef gameStateRef
+            liftIO $ writeIORef previousStateRef (Just currentState) 
+            liftIO $ writeIORef canUndoRef True
             gen <- liftIO newStdGen
 
             let handleMove moveFunc = do
