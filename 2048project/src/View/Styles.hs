@@ -4,6 +4,7 @@ module View.Styles (getTextColor,
                styleButton,
                styleLabelScore,
                emptySpace,
+               bodyStyle,
                buttonsColumnStyle,
                styleNormalText,
                styleScoreBoard,
@@ -43,28 +44,33 @@ module View.Styles (getTextColor,
                     | value == 2048 = "#FFFFFF"
                     | otherwise     = "#FFFFFF"
 
+    bodyStyle :: [(String, String)]
+    bodyStyle = [("background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #91C8E4, #F6F4EB)")] --"background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #4682A9)"
+
     buttonsColumnStyle :: [(String, String)]
     buttonsColumnStyle = [("display", "flex"),
                      ("justify-content", "flex-start"),
                      ("align-items", "flex-start"),
                      ("margin-right", "65px"),
                      ("flex-direction", "column")]
-    
+
     styleButton :: [(String, String)]
     styleButton = [("padding-left", "30px"),
                 ("padding-right", "30px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
-               ("margin","5px"),
-               ("border-radius", "8px"),
-               ("background-color", "#3282B8"),
-               ("color", "#3282B8"),
-               ("font-family", "sans-serif"),
-               ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)"),
-               ("font-size", "15px"),
-               ("font-weight", "bold"),
-               ("transition", "all 0.3s ease"),
-               ("cursor", "pointer")]
+                ("margin","5px"),
+                ("width", "20px"), 
+                ("height", "20px"),
+                ("border-radius", "8px"),
+                ("background-color", "#3282B8"),
+                ("color", "#3282B8"),
+                ("font-family", "sans-serif"),
+                ("box-shadow", "0px 3px 4px rgba(1, 61, 90, 0.5)"),
+                ("font-size", "15px"),
+                ("font-weight", "bold"),
+                ("transition", "all 0.3s ease"),
+                ("cursor", "pointer")]
 
     menuStyle :: [(String, String)]
     menuStyle = [("display", "flex"),
