@@ -10,7 +10,7 @@ module View.Styles (getTextColor,
                styleScoreBoard,
                getGridLines,
                menuStyle,
-               styleButtonStart,
+               mainContainerStyle,
                styleLabelTitle,
                stylePopupWindow,
                stylePopupContent,
@@ -18,34 +18,38 @@ module View.Styles (getTextColor,
                styleScoreBackground) where
 
     getBackgroundColor value | value == 2    = "#DCDCDD"
-                         | value == 4    = "#CBDEEC"
-                         | value == 8    = "#BBDEFB"
-                         | value == 16   = "#90CAF9"
-                         | value == 32   = "#64B5F6"
-                         | value == 64   = "#42A5F5"
-                         | value == 128  = "#2196F3"
-                         | value == 256  = "#1E88E5"
-                         | value == 512  = "#1565C0"
-                         | value == 1024 = "#1565C0"
-                         | value == 2048 = "#0D47A1"
-                         | otherwise     = "#4895EF"
+                             | value == 4    = "#CBDEEC"
+                             | value == 8    = "#BBDEFB"
+                             | value == 16   = "#90CAF9"
+                             | value == 32   = "#64B5F6"
+                             | value == 64   = "#42A5F5"
+                             | value == 128  = "#2196F3"
+                             | value == 256  = "#1E88E5"
+                             | value == 512  = "#1565C0"
+                             | value == 1024 = "#1565C0"
+                             | value == 2048 = "#0D47A1"
+                             | otherwise     = "#4895EF"
 
     getTextColor :: Int -> String
     getTextColor value | value == 2    = "#000000"
-                    | value == 4    = "#000000"
-                    | value == 8    = "#000000"
-                    | value == 16   = "#000000"
-                    | value == 32   = "#000000"
-                    | value == 64   = "#FFFFFF"
-                    | value == 128  = "#FFFFFF"
-                    | value == 256  = "#FFFFFF"
-                    | value == 512  = "#FFFFFF"
-                    | value == 1024 = "#FFFFFF"
-                    | value == 2048 = "#FFFFFF"
-                    | otherwise     = "#FFFFFF"
+                       | value == 4    = "#000000"
+                       | value == 8    = "#000000"
+                       | value == 16   = "#000000"
+                       | value == 32   = "#000000"
+                       | value == 64   = "#FFFFFF"
+                       | value == 128  = "#FFFFFF"
+                       | value == 256  = "#FFFFFF"
+                       | value == 512  = "#FFFFFF"
+                       | value == 1024 = "#FFFFFF"
+                       | value == 2048 = "#FFFFFF"
+                       | otherwise     = "#FFFFFF"
 
     bodyStyle :: [(String, String)]
-    bodyStyle = [("background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #91C8E4, #F6F4EB)")] --"background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #4682A9)"
+    bodyStyle = [("background", "url(https://i.postimg.cc/zfMhfSZP/Picsart-24-04-18-12-07-13-943.jpg)"),            
+                ("background-size", "cover"),
+                ("display", "flex"),
+                ("justify-content", "center")
+                ] --"background", "linear-gradient(to right, #F6F4EB, #91C8E4, #749BC2, #4682A9)"
 
     buttonsColumnStyle :: [(String, String)]
     buttonsColumnStyle = [("display", "flex"),
@@ -77,15 +81,19 @@ module View.Styles (getTextColor,
                 ("justify-content", "flex-start"),
                 ("flex-direction", "flex-start"),
                 ("align-content", "space-between"),
-                ("margin-top","0px"),
+                ("margin-top","0px"),                
                 ("color", "rgba(33, 161, 192, 0.7)"),
                 ("margin-bottom","0px")]
 
     
-    styleButtonStart :: [(String, String)]
-    styleButtonStart = [("display", "flex"),
-                        ("justify-content", "center"),
-                        ("flex-direction", "row")]
+    mainContainerStyle :: [(String, String)]
+    mainContainerStyle = [("display", "flex"),
+                        ("align-items", "center"),
+                        ("flex-direction", "column"),                    
+                        ("margin", "20px"),
+                        ("padding", "0px 240px 30px 240px"),
+                        ("border-radius", "20px"),
+                        ("background-color", "rgba(217, 217, 217, 0.5)")]
 
     styleLabelTitle :: [(String, String)]
     styleLabelTitle = [("font-family", "system-ui"),
@@ -129,7 +137,7 @@ module View.Styles (getTextColor,
     getTextTilePosition :: Int -> Int
     getTextTilePosition x
                       | x > 1000 = 17
-                      | x > 100 = 24072227
+                      | x > 100 = 24
                       | x > 10 = 34
                       | otherwise = 41
 

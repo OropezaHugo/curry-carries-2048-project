@@ -74,8 +74,10 @@ setup gameStateRef highscoreRef window = do
 
     element rowMenuContainer #+ [buttonsColumn, scoreColumn1, scoreColumn2]
 
-    _ <- getBody window #+ [column [row [element titleMainPage], row [element textColum], element rowMenuContainer,
-                                    element canvas]] # set style styleButtonStart
+    let mainContainer = UI.div #. "mainContainer" #+ [row [element titleMainPage], row [element textColum], element rowMenuContainer,
+                                    element canvas] # set style mainContainerStyle
+
+    _ <- getBody window #+ [mainContainer] # set style [("justify-content", "center")]
 
     let drawTile tileValue (x, y) = do
             if tileValue /= 0
@@ -110,7 +112,7 @@ setup gameStateRef highscoreRef window = do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
         _ <- element startGame # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style styleButton
-        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
@@ -119,7 +121,7 @@ setup gameStateRef highscoreRef window = do
 
     on UI.click popupButtonRestart $ const $ do
         _ <- element popupWindow # set style [("display", "none")]
-        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[2, 4, 8, 16], [32, 64, 128, 256], [512, 1024, 2048, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
