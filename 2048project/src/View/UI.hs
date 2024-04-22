@@ -120,6 +120,10 @@ setup gameStateRef highscoreRef window = do
                     liftIO $ writeIORef gameStateRef lastState
                     liftIO $ writeIORef canUndoRef False
                     liftIO $ writeIORef winContinuedRef False
+                    winContinued <- liftIO $readIORef winContinuedRef
+                    when (isWinGame lastState winContinued) $do
+                        liftIO $writeIORef winContinuedRef True
+                        return()
                     drawUpdateOnGame lastState canvas
 
     on UI.click startGame $ const $ do
