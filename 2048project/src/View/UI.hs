@@ -176,7 +176,8 @@ setup gameStateRef highscoreRef window = do
                     when (score > highscore) $ do
                         liftIO $ writeNewHighscore score
                         liftIO $ writeIORef highscoreRef score
-                    _ <- element bestScore # set UI.text (show score) 
+                    highscore <- liftIO $ readIORef highscoreRef
+                    _ <- element bestScore # set UI.text (show highscore)
 
                     let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
                     liftIO $ writeIORef gameStateRef finalGame
