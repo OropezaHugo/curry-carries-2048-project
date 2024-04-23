@@ -190,15 +190,10 @@ module View.Styles (getTextColor,
                     | x < 7 = "20px sans-serif"
 
 
-    getGridLines :: [(Double, Double, Double, Double, String)]
-    getGridLines =
-        [ (100, 0, 2, 400, "#7F7F7F")
-        , (200, 0, 2, 400, "#7F7F7F")
-        , (300, 0, 2, 400, "#7F7F7F")
-        , (0, 100, 400, 2, "#7F7F7F")
-        , (0, 200, 400, 2, "#7F7F7F")
-        , (0, 300, 400, 2, "#7F7F7F")
-        ]
+    getGridLines :: Int -> Int -> Int -> [(Double, Double, Double, Double, String)]
+    getGridLines gridSize tileSize canvasSize =
+        [(fromIntegral (x * tileSize), 0, 2, fromIntegral canvasSize, "#7F7F7F") | x <- [1..(gridSize - 1)]] ++
+        [(0, fromIntegral (y * tileSize), fromIntegral canvasSize, 2, "#7F7F7F") | y <- [1..(gridSize - 1)]]
 
     stylePopupWindow :: [(String, String)]
     stylePopupWindow = [("display", "none"),

@@ -9,10 +9,11 @@ import           MovementHandler
 import           DataHandler
 import           Data.IORef
 import           SaveHighscore
-import           View.Styles hiding (getGridLines)
+import           View.Styles
 import           GameConditions
 import Graphics.UI.Threepenny (start)
 import BoardHandler
+import View.Styles
 
 startUI :: IO ()
 startUI = do
@@ -121,7 +122,7 @@ setup gameStateRef highscoreRef window = do
                            # set UI.height canvasSize
             gridSize <- liftIO $ readIORef gridSizeRef
             let tileSize = canvasSize `div` gridSize
-            let lines = getGridLines gridSize tileSize
+            let lines = getGridLines gridSize tileSize canvasSize
 
             forM_ lines $ \(x,y,w,h,color) -> do
                 canvas # set' UI.fillStyle (UI.htmlColor color)
@@ -275,8 +276,3 @@ setup gameStateRef highscoreRef window = do
                 115 -> handleMove moveDown
 
                 _ -> return ()
-
-getGridLines :: Int -> Int -> [(Double, Double, Double, Double, String)]
-getGridLines gridSize tileSize =
-    [(fromIntegral (x * tileSize), 0, 2, fromIntegral canvasSize, "#bbb") | x <- [1..(gridSize - 1)]] ++
-    [(0, fromIntegral (y * tileSize), fromIntegral canvasSize, 2, "#bbb") | y <- [1..(gridSize - 1)]]
