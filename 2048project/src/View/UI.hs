@@ -170,14 +170,16 @@ setup gameStateRef highscoreRef window = do
 
             let handleMove moveFunc = do
                     let newGameState = moveFunc gameState
-                    let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
-                    let (_, score) = finalGame
-                    liftIO $ writeIORef gameStateRef finalGame
+                    let (_, score) = newGameState
 
+                    highscore <- liftIO $ readIORef highscoreRef
                     when (score > highscore) $ do
                         liftIO $ writeNewHighscore score
                         liftIO $ writeIORef highscoreRef score
-                    _ <- element bestScore # set UI.text (show highscore)
+                    _ <- element bestScore # set UI.text (show score) 
+
+                    let finalGame = moveAndInsertRandomTileIfPossible gameState newGameState gen
+                    liftIO $ writeIORef gameStateRef finalGame
 
                     drawUpdateOnGame finalGame canvas
 
