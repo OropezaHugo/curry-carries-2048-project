@@ -25,8 +25,15 @@ source-repository head
 
 library
   exposed-modules:
+      BoardHandler
+      DataHandler
+      GameConditions
       Lib
       MergeFunction
+      MovementHandler
+      RandomGeneratorFunction
+      SaveHighscore
+      View.Styles
       View.UI
   other-modules:
       Paths_2048project
