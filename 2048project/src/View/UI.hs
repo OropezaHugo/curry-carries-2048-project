@@ -28,49 +28,58 @@ setup :: IORef Game -> IORef Int -> Window -> UI ()
 setup gameStateRef highscoreRef window = do
     winContinuedRef <- liftIO $ newIORef False
     isGamePausedRef <- liftIO $ newIORef False
+    previousStateRef <- liftIO $ newIORef Nothing
+    canUndoRef <- liftIO $ newIORef False
 
     _ <- return window # set UI.title "2048 - CurryCarries"
+
     titleMainPage <- UI.h1 # set UI.text "2048 - Game" # set style styleLabelTitle
     instruction1 <- UI.h3 # set UI.text "1. Merge the blocks with similar value to obtain score." # set style styleNormalText
     instruction2 <- UI.h3 # set UI.text "2. Obtain the number 2048 to win." # set style styleNormalText
     instruction3 <- UI.h3 # set UI.text "3. Enjoy!!!" # set style styleNormalText
+    emptySpace <- UI.h3 # set UI.text "" # set style emptySpace
 
-    textColum <- Core.column [element instruction1, element instruction2, element instruction3]
+    textColum <- Core.column [element instruction1, element instruction2, element instruction3, element emptySpace]
 
     popupWindow <- UI.div #. "popup-window" # set style stylePopupWindow
     popupTitle <- UI.h1 # set UI.text "Game Over" # set UI.style stylePopupText
     popupSubTitle <- UI.h2 # set UI.text "The board is full and there are no more moves to make :(" # set UI.style stylePopupText
-    popupButtonRestart <- UI.button # set UI.text "Restart Game"
-        # set style (styleButton ++ [("margin-left", "345px")])
+    popupButtonRestart <- UI.img # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px"), ("margin-left", "345px")])
 
     popupWindowWin <- UI.div #. "popup-window-win" # set style stylePopupWindow
     popupTitleWin <- UI.h1 # set UI.text "You Win!" # set UI.style stylePopupText
     popupSubTitleWin <- UI.h2 # set UI.text "Congratulations! You have reached 2048!" # set UI.style stylePopupText
-    popupButtonContinue <- UI.button # set UI.text "Continue Game"
-        # set style (styleButton ++ [("margin-left", "240px")])
+    popupButtonContinue <- UI.img # set UI.src "https://i.postimg.cc/zX0RQCHN/play-1.png" # set style (styleButton ++ [("width", "20px"), ("height", "20px"), ("margin-left", "240px")])
 
     _ <- element popupWindow #+ [column [element popupTitle, element popupSubTitle, element popupButtonRestart]]
     _ <- element popupWindowWin #+ [column [element popupTitleWin, element popupSubTitleWin, element popupButtonContinue]]
 
-    bestScoreLabel <- UI.label # set UI.text "BestScore: " # set style styleLabelScore
+    bestScoreLabel <- UI.label # set UI.text "Best Score" # set style styleLabelScore
     highscore <- liftIO $ readIORef highscoreRef
     bestScore <- UI.label # set UI.text (show highscore) # set style styleScoreBoard
-    actualScoreLabel <- UI.label # set UI.text "Score: " # set style styleLabelScore
-    actualScore <- UI.label # set UI.text "0" # set style styleLabelScore
+    actualScoreLabel <- UI.label # set UI.text "Current Score" # set style styleLabelScore
+    actualScore <- UI.label # set UI.text "0" # set style styleScoreBoard
+
+    rowMenuContainer <- UI.div #. "row-menu-conatiner" # set style menuStyle
 
     canvas <- UI.canvas
         # set UI.height canvasSize
         # set UI.width canvasSize
-        # set style [("border", "solid #7d7577 3px"), ("background", "#FCF3E3"), ("margin-top", "25px")]
+        # set style [("border", "solid #7d7577 3px"), ("background", "#ffffff"), ("margin-top", "25px")]
 
-    startGame <- UI.button # set UI.text "Start game" # set style styleButton
+    undoMove <- UI.img # set UI.src "https://i.postimg.cc/GtrVnvfP/return-1.png" # set style styleButton 
+    startGame <- UI.img # set UI.src "https://i.postimg.cc/zX0RQCHN/play-1.png" # set style styleButton
 
     let scoreColumn1 = column [element bestScoreLabel, element bestScore] # set style styleScoreBackground
     let scoreColumn2 = column [element actualScoreLabel, element actualScore] # set style styleScoreBackground
+    let buttonsColumn = column [element startGame, element undoMove] # set style buttonsColumnStyle
 
-    _ <- getBody window #+ [column [row [element titleMainPage,scoreColumn1, scoreColumn2], 
-                                    element textColum, row [element startGame],
-                                    element canvas]] # set style styleButtonStart
+    element rowMenuContainer #+ [buttonsColumn, scoreColumn1, scoreColumn2]
+
+    let mainContainer = UI.div #. "mainContainer" #+ [row [element titleMainPage], row [element textColum], element rowMenuContainer,
+                                    element canvas] # set style mainContainerStyle
+
+    _ <- getBody window #+ [mainContainer] # set style [("justify-content", "center")]
 
     let drawTile tileValue (x, y) = do
             if tileValue /= 0
@@ -96,20 +105,38 @@ setup gameStateRef highscoreRef window = do
             forM_ lines $ \(x,y,w,h,color) -> do
                 canvas # set' UI.fillStyle (UI.htmlColor color)
                 canvas # UI.fillRect (x,y) w h
-
+            
             drawBoard board
 
     _ <- getBody window #+ [element popupWindow, element popupWindowWin]
 
+    on UI.click undoMove $ const $ do
+        canUndo <- liftIO $ readIORef canUndoRef
+        when canUndo $ do
+            previousState <- liftIO $ readIORef previousStateRef
+            case previousState of
+                Nothing -> return ()
+                Just lastState -> do
+                    liftIO $ writeIORef gameStateRef lastState
+                    liftIO $ writeIORef canUndoRef False
+                    liftIO $ writeIORef winContinuedRef False
+                    winContinued <- liftIO $readIORef winContinuedRef
+                    when (isWinGame lastState winContinued) $do
+                        liftIO $writeIORef winContinuedRef True
+                        return()
+                    drawUpdateOnGame lastState canvas
+
     on UI.click startGame $ const $ do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
-        _ <- element startGame # set UI.text "Restart"
+        _ <- element startGame # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style styleButton
         let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
         liftIO $ writeIORef gameStateRef finalGame
+        liftIO $ writeIORef winContinuedRef False
+
         drawUpdateOnGame finalGame canvas
 
     on UI.click popupButtonRestart $ const $ do
@@ -124,18 +151,21 @@ setup gameStateRef highscoreRef window = do
     on UI.click popupButtonContinue $ const $ do
         _ <- element popupWindowWin # set style [("display", "none")]
         liftIO $ writeIORef winContinuedRef True
-        liftIO $ writeIORef isGamePausedRef False 
+        liftIO $ writeIORef isGamePausedRef False
 
     body <- getBody window
-    _ <- element body # set style [("background-color", "#fffaf2")]
+    _ <- element body # set style bodyStyle
 
     on UI.keydown body $ \c -> do
         isGamePaused <- liftIO $ readIORef isGamePausedRef
-        
+
         unless isGamePaused $ do
             gameState <- liftIO $ readIORef gameStateRef
             highscore <- liftIO $ readIORef highscoreRef
             winContinued <- liftIO $ readIORef winContinuedRef
+            currentState <- liftIO $ readIORef gameStateRef
+            liftIO $ writeIORef previousStateRef (Just currentState) 
+            liftIO $ writeIORef canUndoRef True
             gen <- liftIO newStdGen
 
             let handleMove moveFunc = do
@@ -163,17 +193,17 @@ setup gameStateRef highscoreRef window = do
                 39 -> handleMove moveRight
                 68 -> handleMove moveRight
                 100 -> handleMove moveRight
-                
+
                 37 -> handleMove moveLeft
                 97 -> handleMove moveLeft
                 65 -> handleMove moveLeft
-                
+
                 38 -> handleMove moveUp
                 87 -> handleMove moveUp
                 119 -> handleMove moveUp
-                
+
                 40 -> handleMove moveDown
                 83 -> handleMove moveDown
                 115 -> handleMove moveDown
-                
+
                 _ -> return ()
