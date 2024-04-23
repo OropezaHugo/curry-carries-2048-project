@@ -130,7 +130,7 @@ setup gameStateRef highscoreRef window = do
         highscore <- liftIO $ readIORef highscoreRef
         liftIO $ writeNewHighscore highscore
         _ <- element startGame # set UI.src "https://i.postimg.cc/sgLGj3J0/undo-arrow.png" # set style styleButton
-        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 1024, 1024, 0], [0, 0, 0, 0]], 0)
+        let initialGame = ([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0)
         liftIO $ writeIORef gameStateRef initialGame
         gen <- newStdGen
         let finalGame = moveAndInsertRandom initialGame gen
