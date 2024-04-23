@@ -11,9 +11,7 @@ import           Data.IORef
 import           SaveHighscore
 import           View.Styles
 import           GameConditions
-import Graphics.UI.Threepenny (start)
-import BoardHandler
-import View.Styles
+import           BoardHandler
 
 startUI :: IO ()
 startUI = do
@@ -101,7 +99,7 @@ setup gameStateRef highscoreRef window = do
                     canvas # set' UI.fillStyle (UI.htmlColor (getBackgroundColor tileValue))
                     _ <- return canvas # set UI.textFont (getTextFontSize gridSize)
                     _ <- return canvas # set UI.strokeStyle (getTextColor tileValue)
-                    
+
                     canvas # UI.fillRect (fromIntegral (x + 10), fromIntegral (y + 10)) (fromIntegral tileSize - 20) (fromIntegral tileSize - 20)
                     canvas # UI.strokeText (show tileValue) (fromIntegral (x + fst (getTextTilePosition tileValue gridSize)), fromIntegral (y + snd (getTextTilePosition tileValue gridSize)))
                     return canvas
@@ -151,17 +149,21 @@ setup gameStateRef highscoreRef window = do
 
     let minusButtonClicked = do
             currentSize <- liftIO $ readIORef gridSizeRef
-            let newSize = max 4 (currentSize - 1)
-            liftIO $ writeIORef gridSizeRef newSize
-            element gridSizeController # set UI.text (show newSize)
-            startGameAction
+            if currentSize == 4 then return ()
+            else do
+              let newSize = max 4 (currentSize - 1)
+              liftIO $ writeIORef gridSizeRef newSize
+              element gridSizeController # set UI.text (show newSize)
+              startGameAction
 
     let plusButtonClicked = do
             currentSize <- liftIO $ readIORef gridSizeRef
-            let newSize = min 6 (currentSize + 1)
-            liftIO $ writeIORef gridSizeRef newSize
-            element gridSizeController # set UI.text (show newSize)
-            startGameAction
+            if currentSize == 6 then return ()
+            else do
+              let newSize = min 6 (currentSize + 1)
+              liftIO $ writeIORef gridSizeRef newSize
+              element gridSizeController # set UI.text (show newSize)
+              startGameAction
 
     on UI.click minusButton $ const minusButtonClicked
     on UI.click plusButton $ const plusButtonClicked
