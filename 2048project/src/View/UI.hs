@@ -64,7 +64,7 @@ setup gameStateRef highscoreRef window = do
 
     gridSizeLabel <- UI.label # set UI.text "Grid Size" # set style styleLabelScore
     minusButton <- UI.button # set UI.text "-" # set style styleControllerButton
-    gridSizeController <- UI.label # set UI.text "4" # set style styleLabelScore
+    gridSizeController <- UI.label # set UI.text "4" # set style styleScoreBoard
     plusButton <- UI.button # set UI.text "+" # set style styleControllerButton
 
     rowMenuContainer <- UI.div #. "row-menu-conatiner" # set style menuStyle

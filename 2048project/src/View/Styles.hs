@@ -70,8 +70,8 @@ module View.Styles (getTextColor,
                 ("text-align", "center"), ("width", "50px")]
 
     styleButton :: [(String, String)]
-    styleButton = [("padding-left", "30px"),
-                ("padding-right", "30px"),
+    styleButton = [("padding-left", "25px"),
+                ("padding-right", "25px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
                 ("margin","5px"),
@@ -92,7 +92,8 @@ module View.Styles (getTextColor,
                 ("padding-right", "5px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
-                ("margin","5px"),
+                ("margin-left","7px"),
+                ("margin-right","7px"),
                 ("border-radius", "8px"),
                 ("border", "none"),
                 ("background-color", "#3282B8"),
@@ -140,7 +141,7 @@ module View.Styles (getTextColor,
                        ("font-family", "sans-serif"), 
                        ("font-weight", "800"),
                        ("color", "#395B64"),
-                       ("margin", "10px")]
+                       ("margin", "5px")]
 
     styleScoreBoard :: [(String, String)]
     styleScoreBoard = [("font-family", "sans-serif"), 
@@ -221,7 +222,7 @@ module View.Styles (getTextColor,
                             ("justify-content", "top-center"),
                             ("align-items", "center"),
                             ("background-color", "#E8E8E8"),
-                            ("margin-left","10px"),
+                            ("margin-left","8px"),
                             ("margin-top", "5px"),
                             ("margin-bottom", "10px"),
                             ("border-radius", "10px")]
