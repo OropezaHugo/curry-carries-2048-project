@@ -1,7 +1,10 @@
 module View.Styles (getTextColor,
                getTextTilePosition,
                getBackgroundColor,
+               getTextFontSize,
+               styleInput,
                styleButton,
+               styleControllerButton,
                styleLabelScore,
                emptySpace,
                bodyStyle,
@@ -55,12 +58,20 @@ module View.Styles (getTextColor,
     buttonsColumnStyle = [("display", "flex"),
                      ("justify-content", "flex-start"),
                      ("align-items", "flex-start"),
-                     ("margin-right", "65px"),
+--                      ("margin-right", "65px"),
                      ("flex-direction", "column")]
 
+    styleInput :: [(String, String)]
+    styleInput = [("display", "flex"), 
+                ("font-family", "sans-serif"),
+                ("font-size", "20px"),
+                ("font-weight", "800"),
+                ("color", "#1C2B2D"),
+                ("text-align", "center"), ("width", "50px")]
+
     styleButton :: [(String, String)]
-    styleButton = [("padding-left", "30px"),
-                ("padding-right", "30px"),
+    styleButton = [("padding-left", "25px"),
+                ("padding-right", "25px"),
                 ("padding-top", "5px"),
                 ("padding-bottom", "5px"),
                 ("margin","5px"),
@@ -75,6 +86,26 @@ module View.Styles (getTextColor,
                 ("font-weight", "bold"),
                 ("transition", "all 0.3s ease"),
                 ("cursor", "pointer")]
+
+    styleControllerButton:: [(String, String)]
+    styleControllerButton = [("padding-left", "5px"),
+                ("padding-right", "5px"),
+                ("padding-top", "5px"),
+                ("padding-bottom", "5px"),
+                ("margin-left","7px"),
+                ("margin-right","7px"),
+                ("border-radius", "8px"),
+                ("border", "none"),
+                ("background-color", "#3282B8"),
+                ("color", "#FFF"),
+                ("width", "30px"),
+                ("font-family", "sans-serif"),
+                ("font-size", "15px"),
+                ("font-weight", "bold"),
+                ("text-align", "center"),
+                ("justify-content", "center"),
+                ("cursor", "pointer")]
+
 
     menuStyle :: [(String, String)]
     menuStyle = [("display", "flex"),
@@ -110,7 +141,7 @@ module View.Styles (getTextColor,
                        ("font-family", "sans-serif"), 
                        ("font-weight", "800"),
                        ("color", "#395B64"),
-                       ("margin", "10px")]
+                       ("margin", "5px")]
 
     styleScoreBoard :: [(String, String)]
     styleScoreBoard = [("font-family", "sans-serif"), 
@@ -134,22 +165,36 @@ module View.Styles (getTextColor,
                        ("margin-bottom","3px"),
                        ("margin-top", "0px")]
 
-    getTextTilePosition :: Int -> Int
-    getTextTilePosition x
-                      | x > 1000 = 17
-                      | x > 100 = 24
-                      | x > 10 = 34
-                      | otherwise = 41
+    getTextTilePosition :: Int -> Int -> (Int, Int)
+    getTextTilePosition x y
+                    -- Higher than 1000
+                        | x > 1000 && y == 4 = (17, 60)
+                        | x > 1000 && y == 5 = (12, 50)
+                        | x > 1000 && y == 6 = (12, 40)
+                    -- Lower than 1000
+                        | x > 100 && y == 4 = (24, 60)
+                        | x > 100 && y == 5 = (18, 50)
+                        | x > 100 && y == 6 = (14, 40)
+                    -- Lower than 100                      
+                        | x > 10 && y == 4 = (34, 60)
+                        | x > 10 && y == 5 = (30, 50)
+                        | x > 10 && y == 6 = (24, 40)
+                    -- Lower than 10
+                        | x < 10 && y == 5 = (33, 50)
+                        | x < 10 && y == 6 = (28, 40)
+                        | otherwise = (41, 60)
+    
+    getTextFontSize :: Int -> String
+    getTextFontSize x
+                    | x < 5 = "30px sans-serif"
+                    | x < 6 = "25px sans-serif"
+                    | x < 7 = "20px sans-serif"
 
-    getGridLines :: [(Double, Double, Double, Double, String)]
-    getGridLines =
-        [ (100, 0, 2, 400, "#7F7F7F")
-        , (200, 0, 2, 400, "#7F7F7F")
-        , (300, 0, 2, 400, "#7F7F7F")
-        , (0, 100, 400, 2, "#7F7F7F")
-        , (0, 200, 400, 2, "#7F7F7F")
-        , (0, 300, 400, 2, "#7F7F7F")
-        ]
+
+    getGridLines :: Int -> Int -> Int -> [(Double, Double, Double, Double, String)]
+    getGridLines gridSize tileSize canvasSize =
+        [(fromIntegral (x * tileSize), 0, 2, fromIntegral canvasSize, "#7F7F7F") | x <- [1..(gridSize - 1)]] ++
+        [(0, fromIntegral (y * tileSize), fromIntegral canvasSize, 2, "#7F7F7F") | y <- [1..(gridSize - 1)]]
 
     stylePopupWindow :: [(String, String)]
     stylePopupWindow = [("display", "none"),
@@ -177,7 +222,7 @@ module View.Styles (getTextColor,
                             ("justify-content", "top-center"),
                             ("align-items", "center"),
                             ("background-color", "#E8E8E8"),
-                            ("margin-left","10px"),
+                            ("margin-left","8px"),
                             ("margin-top", "5px"),
                             ("margin-bottom", "10px"),
                             ("border-radius", "10px")]
