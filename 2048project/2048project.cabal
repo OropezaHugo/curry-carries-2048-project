@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       Lib
+      MergeFunction
+      View.UI
   other-modules:
       Paths_2048project
   autogen-modules:
@@ -35,6 +37,10 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , filepath ==1.4.200.1
+    , random ==1.2.1.2
+    , text ==2.0.2
+    , threepenny-gui ==0.9.4.1
   default-language: Haskell2010
 
 executable 2048project-exe
@@ -49,6 +55,10 @@ executable 2048project-exe
   build-depends:
       2048project
     , base >=4.7 && <5
+    , filepath ==1.4.200.1
+    , random ==1.2.1.2
+    , text ==2.0.2
+    , threepenny-gui ==0.9.4.1
   default-language: Haskell2010
 
 test-suite 2048project-test
@@ -64,4 +74,8 @@ test-suite 2048project-test
   build-depends:
       2048project
     , base >=4.7 && <5
+    , filepath ==1.4.200.1
+    , random ==1.2.1.2
+    , text ==2.0.2
+    , threepenny-gui ==0.9.4.1
   default-language: Haskell2010
